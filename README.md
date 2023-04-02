@@ -1,7 +1,3 @@
-# CS524 - Big Data Visualization & Analytics
+# Git/Githun Visualizations
 
-Instructor: Fabio Miranda
-
-Course webpage: https://fmiranda.me/courses/
-
-Final project template. Please remove these lines when creating your own markdown file.
+Final project for CS524 - Big Data Visualization & Analytics.
