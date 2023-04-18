@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, safe_join
+from flask import Flask, send_from_directory, safe_join, request
 from git import Repo
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def serve_static(filename):
 
 @app.route('/api/graph', methods=['GET'])
 def api_graph():
-    print("Yay this worked!")
+    print(request.args.get("githuburl"))
     return "Noting yet"
 
 if __name__ == "__main__":

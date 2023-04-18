@@ -23,6 +23,9 @@ export class DataService {
   graphUrl = 'api/graph';
 
   getGraph(gitlink: string): Observable<string> {
-	return this.http.get<string>(this.graphUrl);
+
+	let params = new HttpParams();
+	params = params.append("githuburl", gitlink)
+	return this.http.get<string>(this.graphUrl, {params: params});
   }
 }

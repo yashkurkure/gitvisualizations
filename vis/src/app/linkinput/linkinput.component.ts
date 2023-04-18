@@ -28,7 +28,7 @@ export class LinkinputComponent implements OnInit{
 		// request is sent to the back end server.
 		this.dataService.getGraph(url).subscribe(
 			(response) => {                           //next() callback
-			  this.value = response; 
+				this.value = response; 
 			});
 	}
 
