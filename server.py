@@ -2,6 +2,7 @@ from flask import Flask, send_from_directory, safe_join, request
 from git import Repo
 import json
 import os
+import shutil
 
 app = Flask(__name__)
 
@@ -16,7 +17,11 @@ def serve_static(filename):
 @app.route('/api/graph', methods=['GET'])
 def api_graph():
     print(request.args.get("githuburl"))
-    Repo.clone_from(request.args.get("githuburl"), "./gen/")
+    
+    if os.path.exists("../gen/"):
+        shutil.rmtree("../gen")
+    
+    Repo.clone_from(request.args.get("githuburl"), "../gen/")
     tree = {
         "nodes" : [
             { "id": "1", "name": ".", "val": 0 },
@@ -26,7 +31,7 @@ def api_graph():
         ]
     }
 
-    generateTree("./gen", tree, 2, 1)
+    generateTree("../gen", tree, 2, 1)
     print(tree)
     json_object = json.dumps(tree, indent = 4)
 

@@ -7,6 +7,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { from } from 'rxjs';
 
+type GraphData = {
+	nodes: { id: string, group: number}[]
+	links : {source: string, target: number}[]
+}
+
 // TODO: Readings
 // Observable: https://www.tektutorialshub.com/angular/angular-observable-tutorial-using-rxjs/
 // HttpClient: https://www.tektutorialshub.com/angular/angular-http-get-example-using-httpclient/
@@ -27,7 +32,7 @@ export class DataService {
 	private githubUrl = new BehaviorSubject<string>("https://github.com/yashkurkure/cs501-hw2")
 	currentGithubUrl = this.githubUrl.asObservable()
 
-	private graphData = new BehaviorSubject<Observable<Object>>(this.http.get<Object>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2")}));
+	private graphData = new BehaviorSubject<Observable<GraphData>>(this.http.get<GraphData>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2")}));
 	currentGraphData = this.graphData.asObservable()
 
 
@@ -37,6 +42,6 @@ export class DataService {
 		let params = new HttpParams();
 		params = params.append("githuburl", githubUrl)
 
-		this.graphData.next(this.http.get<Object>(this.graphUrl, {params: params}));
+		this.graphData.next(this.http.get<GraphData>(this.graphUrl, {params: params}));
 	}
 }
