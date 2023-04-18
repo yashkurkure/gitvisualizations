@@ -11,26 +11,17 @@ export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService) { }
 
-	value: Object = {};
-	errorMessage: string = '';
-	loading: boolean = false;
+	// subscribed to data service
+	currentGithubUrl!: string;
 
 
 	ngOnInit(): void {
+		this.dataService.currentGithubUrl.subscribe(newGithubUrl=>{
+			this.currentGithubUrl = newGithubUrl;
+		});
 	}
 
-	onKey(event: any) { // without type info
-		this.getGraph(event.target.value);
+	onKey(event: any) {
+		this.dataService.updateGithubUrl(event.target.value);
 	}
-
-	getGraph(url: string): void{
-
-		// Only after we subscribe to the observable, the http get 
-		// request is sent to the back end server.
-		this.dataService.getGraph(url).subscribe(
-			(response) => {                           //next() callback
-				this.value = response;
-			});
-	}
-
 }
