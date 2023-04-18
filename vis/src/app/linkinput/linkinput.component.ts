@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 
+
 @Component({
 	selector: 'app-linkinput',
 	templateUrl: './linkinput.component.html',
@@ -10,7 +11,7 @@ export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService) { }
 
-	value: string = '';
+	value: Object = {};
 	errorMessage: string = '';
 	loading: boolean = false;
 
@@ -28,7 +29,7 @@ export class LinkinputComponent implements OnInit{
 		// request is sent to the back end server.
 		this.dataService.getGraph(url).subscribe(
 			(response) => {                           //next() callback
-				this.value = response; 
+				this.value = response;
 			});
 	}
 
