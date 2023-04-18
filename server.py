@@ -14,6 +14,7 @@ def serve_static(filename):
 @app.route('/api/graph', methods=['GET'])
 def api_graph():
     print(request.args.get("githuburl"))
+    Repo.clone_from(request.args.get("githuburl"), "./gen/")
     return "Noting yet"
 
 if __name__ == "__main__":
