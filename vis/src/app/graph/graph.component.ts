@@ -7,7 +7,9 @@ import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types'
 import { Observable } from 'rxjs';
 import * as THREE from "three";
 
-
+// TODO (Mouse events): https://fireflysemantics.medium.com/tracking-mouse-events-with-hostlistener-26dcc092692
+// TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
+ 
 
 
 @Component({
