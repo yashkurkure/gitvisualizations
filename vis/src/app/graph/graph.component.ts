@@ -5,6 +5,7 @@ import ForceGraph3D from '3d-force-graph';
 import { BooleanKeyframeTrack } from 'three';
 import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types';
 import { Observable } from 'rxjs';
+import * as THREE from "three";
 
 
 
@@ -98,6 +99,15 @@ export class GraphComponent {
 			}
 
 		})
+
+		const scene = this.graph.scene();
+
+		const camera  = this.graph.camera();
+
+		const boxGeometry = new THREE.BoxGeometry();
+		const boxMaterial = new THREE.MeshBasicMaterial({color: 0x00FF00});
+		const box = new THREE.Mesh(boxGeometry, boxMaterial);
+		scene.add(box);
 
 	}
 
