@@ -4,6 +4,7 @@ import { DataService } from '../data.service';
 import ForceGraph3D from '3d-force-graph';
 import { BooleanKeyframeTrack } from 'three';
 import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types';
+import { Observable } from 'rxjs';
 
 
 
@@ -58,9 +59,19 @@ export class GraphComponent {
 	//On Initialization of the component.
 	ngOnInit(): void {
 
+		this.dataService.currentGraphData.subscribe((obs: Observable<GraphDataRaw>)=>{
+			obs.subscribe((gData: GraphDataRaw)=>{
+				this.rawData = gData
+				this.loadGraph()
+			})
+		});
+	}
+
+	loadGraph(): void {
+
 		// Get the raw data
-		this.rawData = this.sampleData;
-		console.log(this.rawData)
+		//this.rawData = this.sampleData;
+		//console.log(this.rawData)
 
 		// this.graph = ForceGraph3D()(document.getElementById('graph')!)
 		//  .graphData(this.rawData)
@@ -88,7 +99,6 @@ export class GraphComponent {
 
 		})
 
-		// console.log(prunedTree)
 	}
 
 	dataCollapsableGraph(rawData: GraphDataRaw): GraphData {
