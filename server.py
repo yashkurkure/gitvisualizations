@@ -4,6 +4,9 @@ import json
 import os
 import shutil
 
+
+all_repo_root = "../repos"
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -16,12 +19,33 @@ def serve_static(filename):
 
 @app.route('/api/graph', methods=['GET'])
 def api_graph():
-    print(request.args.get("githuburl"))
     
-    if os.path.exists("../gen/"):
-        shutil.rmtree("../gen")
-    
-    Repo.clone_from(request.args.get("githuburl"), "../gen/")
+    # Get the url of the repository.
+    repo_url = request.args.get("githuburl")
+    print(f'Received url: {repo_url}')
+
+    # Get the name of the repository.
+    repo_name = repo_url.split('.git')[0].split('/')[-1]
+    print(f'Repository name: {repo_name}')
+
+    # The place where the repo would be/is cloned.
+    repo_clone_path = all_repo_root + "/" + repo_name.lower() + "/"
+
+    # Check of the all_repo_root directory exists.
+    if not os.path.exists(all_repo_root):
+        # if not create it.
+        os.makedirs(all_repo_root)
+
+    # Check if the repository was already cloned.
+    if not os.path.exists(repo_clone_path):
+        # if not lets clone it.
+        print("Cloning repository...")
+        Repo.clone_from(repo_url, repo_clone_path)
+        print(f'Cloned repository at: {repo_clone_path}')
+    else:
+        print(f'Found repository at: {repo_clone_path}')
+
+
     tree = {
         "nodes" : [
             { "id": "1", "name": ".", "leaf": 0 },
@@ -31,10 +55,11 @@ def api_graph():
         ]
     }
 
-    generateTree("../gen", tree, 2, 1)
-    print(tree)
+    print(f'Generating tree...')
+    generateTree(repo_clone_path, tree, 2, 1)
     json_object = json.dumps(tree, indent = 4)
 
+    print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
         status=200,
