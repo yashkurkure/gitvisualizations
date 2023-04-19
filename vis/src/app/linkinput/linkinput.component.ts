@@ -22,6 +22,7 @@ export class LinkinputComponent implements OnInit{
 	}
 
 	onKey(event: any) {
+		console.log("New link entered")
 		this.dataService.updateGithubUrl(event.target.value);
 	}
 }

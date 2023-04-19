@@ -24,7 +24,7 @@ def api_graph():
     Repo.clone_from(request.args.get("githuburl"), "../gen/")
     tree = {
         "nodes" : [
-            { "id": "1", "name": ".", "val": 0 },
+            { "id": "1", "name": ".", "leaf": 0 },
         ], 
         "links" : [
 
@@ -58,11 +58,11 @@ def generateTree(path, tree, next_id, src_id):
     files = listFiles(path)
     next_dir_id = next_id + len(files) + len(directories)
     for file in files:
-        tree["nodes"].append({"id": str(next_id), "name": str(file), "val": 1})
+        tree["nodes"].append({"id": str(next_id), "name": str(file), "leaf": 1})
         tree["links"].append({ "source": str(src_id), "target": str(next_id) })
         next_id +=1
     for directory in directories:
-        tree["nodes"].append({"id": str(next_id), "name": str(directory), "val": 0})
+        tree["nodes"].append({"id": str(next_id), "name": str(directory), "leaf": 0})
         tree["links"].append({ "source": str(src_id), "target": str(next_id) })
         num_nodes_added = generateTree(path+"/"+directory, tree, next_dir_id, next_id)
         next_dir_id = next_dir_id + num_nodes_added
