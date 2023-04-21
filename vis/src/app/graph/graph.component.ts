@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { DataService } from '../data.service';
 import ForceGraph3D from '3d-force-graph';
 import { BooleanKeyframeTrack } from 'three';
@@ -7,9 +7,11 @@ import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types'
 import { Observable } from 'rxjs';
 import * as THREE from "three";
 
+
 // TODO (Mouse events): https://fireflysemantics.medium.com/tracking-mouse-events-with-hostlistener-26dcc092692
 // TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
- 
+// TODO (ray castig)
+
 
 
 @Component({
@@ -19,8 +21,17 @@ import * as THREE from "three";
 })
 export class GraphComponent {
 
+
+
+	highlightNodes = new Set();
+	hoverNode!: Node | null;
 	visibleNodes: Node[] = []
 	visibleLinks: Link[] = []
+
+	camera!: THREE.Camera
+	renderer!: THREE.Renderer
+	canvas!: HTMLCanvasElement
+	scene!: THREE.Scene
 
 	nodesById: any
 
@@ -54,14 +65,76 @@ export class GraphComponent {
 			{source: 4, target: 8},
 		]
 	}
+
+
+    updateHighlight() {
+      // trigger update of highlighted objects in scene
+      this.graph
+        .nodeColor(this.graph.nodeColor())
+    }
 		
 	// Constructor.
 	constructor(private dataService: DataService) {
 	}
 
+	// test(event: any){
+	// 	var rightclick; 
+	// 	if (event.which) rightclick = (event.which == 3); 
+	// 	else if (event.button) rightclick = (event.button == 2); 
+	// 	console.log('Rightclick: ' + rightclick); // true or false
+	// 	console.log(event.clientX);
+	// 	console.log(event.clientY);
+	//    }
+
+	
+
+	// @HostListener('document:mousedown', ['$event'])
+	// onMouseDown(event: any) {
+	// 	console.log('Mouse down!')
+	// }
+
+	// @HostListener('document:mouseup', ['$event'])
+	// onMouseUp(event: any) {
+	// 	console.log('Mouse up!')
+	// }
+
+	// @HostListener('keydown.shift', ['$event'])
+    // onShiftKeyDown(event: any) {
+    //     // optionally use preventDefault() if your combination
+    //     // triggers other events (moving focus in case of Shift+Tab)
+    //     // e.preventDefault();
+    //     console.log('Shift down');
+    // }
+
+	// @HostListener('keyup.shift', ['$event'])
+    // onShiftKeyUp(event: any) {
+    //     // optionally use preventDefault() if your combination
+    //     // triggers other events (moving focus in case of Shift+Tab)
+    //     // e.preventDefault();
+    //     console.log('Shift down');
+    // }
+
+	worldPointFromScreenPoint( screenPoint: any, camera: any ) {
+
+		let worldPoint = new THREE.Vector3();
+		worldPoint.x = screenPoint.x;
+		worldPoint.y = screenPoint.y;
+		worldPoint.z = 0;
+		worldPoint.unproject( camera );
+		return worldPoint;
+	
+	}
+
+	getCanvasRelativePosition(event: any) {
+		const rect = this.canvas.getBoundingClientRect();
+		return {
+		  x: (event.clientX - rect.left) * this.canvas.width  / rect.width,
+		  y: (event.clientY - rect.top ) * this.canvas.height / rect.height,
+		};
+	  }
+
 	//On Initialization of the component.
 	ngOnInit(): void {
-
 		this.dataService.currentGraphData.subscribe((obs: Observable<GraphDataRaw>)=>{
 			obs.subscribe((gData: GraphDataRaw)=>{
 				this.rawData = gData
@@ -70,18 +143,13 @@ export class GraphComponent {
 		});
 	}
 
+	changeNodeColor(node : Node): void {
+
+		this.highlightNodes.has(node) ? node === this.hoverNode ? 'rgb(255,0,0,1)' : 'rgba(255,160,0,0.8)' : 'rgba(0,255,255,0.6)'
+	}
+
 	loadGraph(): void {
 
-		// Get the raw data
-		//this.rawData = this.sampleData;
-		//console.log(this.rawData)
-
-		// this.graph = ForceGraph3D()(document.getElementById('graph')!)
-		//  .graphData(this.rawData)
-		
-		// console.log(this.sampleData)
-
-		// Add the required attr to make it collapsable
 		this.data = this.dataCollapsableGraph(this.rawData)
 		console.log("DATA: ", this.data)
 		
@@ -89,9 +157,12 @@ export class GraphComponent {
 		const prunedTree = this.getPrunedTree(this.data)
 		console.log("PRUNED: ", JSON.stringify(prunedTree))
 
-		this.graph = ForceGraph3D()(document.getElementById('graph')!)
-		.graphData(prunedTree)
-		.onNodeClick((node: Object, event: MouseEvent) => {
+		
+
+		this.graph = ForceGraph3D()
+		(document.getElementById('graph')!)
+		  .graphData(prunedTree)
+		  .onNodeClick((node: Object, event: MouseEvent) => {
 
 			const node2: Node = node as Node
 			if(node2.childLinks.length) {
@@ -101,15 +172,35 @@ export class GraphComponent {
 			}
 
 		})
+		.nodeColor(node => this.highlightNodes.has(node) ? node === this.hoverNode ? 'rgb(255,0,0,1)' : 'rgba(255,160,0,0.8)' : 'rgba(0,255,255,0.6)')
+		.onNodeHover(node2 => {
 
-		const scene = this.graph.scene();
+			const node: Node = node2 as Node
 
-		const camera  = this.graph.camera();
+		// no state change
+		if ((!node && !this.highlightNodes.size) || (node && this.hoverNode === node)) return;
 
-		const boxGeometry = new THREE.BoxGeometry();
-		const boxMaterial = new THREE.MeshBasicMaterial({color: 0x00FF00});
-		const box = new THREE.Mesh(boxGeometry, boxMaterial);
-		scene.add(box);
+		this.highlightNodes.clear();
+		if (node) {
+			this.highlightNodes.add(node);
+		}
+
+		this.hoverNode = node || null;
+
+		this.updateHighlight();
+		})
+		// This disables clicking on the node but does not disable camera panning
+		//this.graph.enablePointerInteraction(false);
+
+		// this.renderer = this.graph.renderer();
+
+		// this.canvas = this.renderer.domElement;
+
+		// this.scene = this.graph.scene();
+
+		// this.camera  = this.graph.camera();
+
+		// const controls = this.graph.controls();
 
 	}
 
@@ -174,25 +265,4 @@ export class GraphComponent {
 		});
 		
 	}
-
-
-
 }
-
-
-// {
-// 	"nodes":
-// 	[
-// 		{"id":1,"name":".","leaf":0,"collapsed":false,"childLinks":[{"source":1,"target":2},{"source":1,"target":3},{"source":1,"target":5}]},
-// 		{"id":2,"name":"dir1","leaf":0,"collapsed":true,"childLinks":[{"source":2,"target":6}]},
-// 		{"id":3,"name":"dir2","leaf":0,"collapsed":true,"childLinks":[{"source":3,"target":7},{"source":3,"target":4}]},
-// 		{"id":5,"name":"file1","leaf":1,"collapsed":true,"childLinks":[]}
-// 	],
-	
-// 	"links":
-// 	[
-// 		{"source":1,"target":2},
-// 		{"source":1,"target":3},
-// 		{"source":1,"target":5}
-// 	]
-// }
