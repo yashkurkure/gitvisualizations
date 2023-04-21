@@ -6,7 +6,7 @@ import { BooleanKeyframeTrack } from 'three';
 import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types';
 import { Observable } from 'rxjs';
 import * as THREE from "three";
-
+import * as d3 from "d3";
 
 // TODO (Mouse events): https://fireflysemantics.medium.com/tracking-mouse-events-with-hostlistener-26dcc092692
 // TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
@@ -153,22 +153,58 @@ export class GraphComponent {
 		this.data = this.dataCollapsableGraph(this.rawData)
 		console.log("DATA: ", this.data)
 		
-		// Get the tree that is visiable
+		//Get the tree that is visiable
 		const prunedTree = this.getPrunedTree(this.data)
 		console.log("PRUNED: ", JSON.stringify(prunedTree))
 
 		
-
+		const NODE_REL_SIZE = 1;
 		this.graph = ForceGraph3D()
 		(document.getElementById('graph')!)
-		  .graphData(prunedTree)
-		  .onNodeClick((node: Object, event: MouseEvent) => {
-
+			.dagMode('td')
+			.dagLevelDistance(40)
+		// .backgroundColor('#101020')
+		// .linkColor(() => 'rgba(255,255,255,0.2)')
+		// .nodeRelSize(NODE_REL_SIZE)
+		// .nodeId('path')
+		// .nodeVal('size')
+		// .nodeLabel('path')
+		// .nodeAutoColorBy('module')
+		// .nodeOpacity(0.9)
+		// .linkDirectionalParticles(2)
+		// .linkDirectionalParticleWidth(0.8)
+		// .linkDirectionalParticleSpeed(0.006)
+		// .d3VelocityDecay(0.3)
+		.graphData(prunedTree)
+		.onNodeClick((node: Object, event: MouseEvent) => {
 			const node2: Node = node as Node
 			if(node2.childLinks.length) {
 				node2.collapsed = !node2.collapsed;
 				const prunedData = this.getPrunedTree(this.data)
 				this.graph.graphData(prunedData)
+			}
+
+			if (this.highlightNodes.has(node2)) {
+
+				node2.childLinks.forEach((node3)=>{
+
+					if(!this.highlightNodes.has(node3)) {
+						this.highlightNodes.add(node3)
+					}
+					
+				})
+
+			}
+			else {
+
+				node2.childLinks.forEach((node3)=>{
+
+					if(this.highlightNodes.has(node3)) {
+						this.highlightNodes.delete(node3)
+					}
+					
+				})
+
 			}
 
 		})
@@ -180,15 +216,36 @@ export class GraphComponent {
 		// no state change
 		if ((!node && !this.highlightNodes.size) || (node && this.hoverNode === node)) return;
 
-		this.highlightNodes.clear();
+		
 		if (node) {
-			this.highlightNodes.add(node);
+			if (this.highlightNodes.has(node)) {
+				this.highlightNodes.delete(node)
+				node.childLinks.forEach((node3)=>{
+
+					if(this.highlightNodes.has(node3)) {
+						this.highlightNodes.delete(node3)
+					}
+					
+				})
+			}
+			else {
+				this.highlightNodes.add(node);
+				node.childLinks.forEach((node3)=>{
+
+					if(!this.highlightNodes.has(node3)) {
+						this.highlightNodes.add(node3)
+					}
+					
+				})
+			}
 		}
 
 		this.hoverNode = node || null;
 
 		this.updateHighlight();
 		})
+
+
 		// This disables clicking on the node but does not disable camera panning
 		//this.graph.enablePointerInteraction(false);
 
