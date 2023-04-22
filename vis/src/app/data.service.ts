@@ -30,6 +30,9 @@ export class DataService {
 	private githubUrl = new BehaviorSubject<string>("https://github.com/yashkurkure/cs501-hw2")
 	currentGithubUrl = this.githubUrl.asObservable()
 
+	private selectedFiles = new BehaviorSubject<string>("No Files/Dirs selected")
+	currentselectedFiles = this.selectedFiles.asObservable()
+
 	private graphData = new BehaviorSubject<Observable<GraphDataRaw>>(this.http.get<GraphDataRaw>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2")}));
 	currentGraphData = this.graphData.asObservable()
 
@@ -41,5 +44,9 @@ export class DataService {
 		params = params.append("githuburl", githubUrl)
 
 		this.graphData.next(this.http.get<GraphDataRaw>(this.graphUrl, {params: params}));
+	}
+
+	updateSelectedFiles(selectedFiles: string): void {
+		this.selectedFiles.next(selectedFiles);
 	}
 }

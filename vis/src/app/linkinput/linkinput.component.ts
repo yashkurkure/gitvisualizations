@@ -14,10 +14,16 @@ export class LinkinputComponent implements OnInit{
 	// subscribed to data service
 	currentGithubUrl!: string;
 
+	// subscribed to data service
+	currentSelectedFiles!: string;
 
 	ngOnInit(): void {
 		this.dataService.currentGithubUrl.subscribe(newGithubUrl=>{
 			this.currentGithubUrl = newGithubUrl;
+		});
+
+		this.dataService.currentselectedFiles.subscribe(newSelectedFiles=>{
+			this.currentSelectedFiles = newSelectedFiles;
 		});
 	}
 

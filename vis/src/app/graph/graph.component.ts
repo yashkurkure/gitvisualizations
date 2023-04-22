@@ -23,8 +23,8 @@ import { Text } from "troika-three-text";
 })
 export class GraphComponent {
 
-
-
+	selectedFiles_txt = "None selected";
+	selectedFiles = new Set();
 	highlightNodes = new Set();
 	hoverNode!: Node | null;
 	visibleNodes: Node[] = []
@@ -188,7 +188,7 @@ export class GraphComponent {
 			return text
 
 		  })
-		.nodeThreeObjectExtend(false)
+		.nodeThreeObjectExtend(true)
 		.onNodeClick((node: Object, event: MouseEvent) => {
 			const node2: Node = node as Node
 			if(node2.childLinks.length) {
@@ -197,28 +197,28 @@ export class GraphComponent {
 				this.graph.graphData(prunedData)
 			}
 
-			if (this.highlightNodes.has(node2)) {
+			// if (this.highlightNodes.has(node2)) {
 
-				node2.childLinks.forEach((node3)=>{
+			// 	node2.childLinks.forEach((node3)=>{
 
-					if(!this.highlightNodes.has(node3)) {
-						this.highlightNodes.add(node3)
-					}
+			// 		if(!this.highlightNodes.has(node3)) {
+			// 			this.highlightNodes.add(node3)
+			// 		}
 					
-				})
+			// 	})
 
-			}
-			else {
+			// }
+			// else {
 
-				node2.childLinks.forEach((node3)=>{
+			// 	node2.childLinks.forEach((node3)=>{
 
-					if(this.highlightNodes.has(node3)) {
-						this.highlightNodes.delete(node3)
-					}
+			// 		if(this.highlightNodes.has(node3)) {
+			// 			this.highlightNodes.delete(node3)
+			// 		}
 					
-				})
+			// 	})
 
-			}
+			// }
 
 		})
 		.nodeColor(node => this.highlightNodes.has(node) ? node === this.hoverNode ? 'rgb(255,0,0,1)' : 'rgba(255,160,0,0.8)' : 'rgba(0,255,255,0.6)')
@@ -233,23 +233,11 @@ export class GraphComponent {
 		if (node) {
 			if (this.highlightNodes.has(node)) {
 				this.highlightNodes.delete(node)
-				node.childLinks.forEach((node3)=>{
-
-					if(this.highlightNodes.has(node3)) {
-						this.highlightNodes.delete(node3)
-					}
-					
-				})
+				this.updateSelectedFiles(this.highlightNodes)
 			}
 			else {
 				this.highlightNodes.add(node);
-				node.childLinks.forEach((node3)=>{
-
-					if(!this.highlightNodes.has(node3)) {
-						this.highlightNodes.add(node3)
-					}
-					
-				})
+				this.updateSelectedFiles(this.highlightNodes)
 			}
 		}
 
@@ -335,5 +323,15 @@ export class GraphComponent {
 			this.updateVisibleTree(cnode, nodesById)
 		});
 		
+	}
+
+	updateSelectedFiles(s: Set<any>) {
+
+		var txt = ""
+		s.forEach((node: Node) =>{
+			txt = txt + node.name + ", "
+		})
+		this.dataService.updateSelectedFiles(txt)
+
 	}
 }
