@@ -7,6 +7,8 @@ import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types'
 import { Observable } from 'rxjs';
 import * as THREE from "three";
 import * as d3 from "d3";
+import {CSS2DRenderer, CSS2DObject} from 'three-css2drender'
+import { Text } from "troika-three-text";
 
 // TODO (Mouse events): https://fireflysemantics.medium.com/tracking-mouse-events-with-hostlistener-26dcc092692
 // TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
@@ -175,7 +177,18 @@ export class GraphComponent {
 		// .linkDirectionalParticleWidth(0.8)
 		// .linkDirectionalParticleSpeed(0.006)
 		// .d3VelocityDecay(0.3)
-		.graphData(prunedTree)
+		.nodeThreeObject(node2 => {
+
+			const node: Node = node2 as Node
+			const text = new Text();
+			Object.assign(text, {
+			text: node.name,
+			fontSize: 2,
+			});
+			return text
+
+		  })
+		.nodeThreeObjectExtend(false)
 		.onNodeClick((node: Object, event: MouseEvent) => {
 			const node2: Node = node as Node
 			if(node2.childLinks.length) {
@@ -244,6 +257,7 @@ export class GraphComponent {
 
 		this.updateHighlight();
 		})
+		.graphData(prunedTree)
 
 
 		// This disables clicking on the node but does not disable camera panning
