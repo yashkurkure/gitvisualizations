@@ -7,21 +7,21 @@ import { GraphComponent } from './graph/graph.component';
 import { LinkinputComponent } from './linkinput/linkinput.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatTabsModule} from '@angular/material/tabs'; 
+import { MaterialModule } from './material/material.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    GraphComponent,
-    LinkinputComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-	HttpClientModule,
- 	BrowserAnimationsModule,
-	MatTabsModule
-  ],
+	declarations: [
+		AppComponent,
+		GraphComponent,
+		LinkinputComponent
+	],
+	imports: [
+		BrowserModule,
+		AppRoutingModule,
+		HttpClientModule,
+		BrowserAnimationsModule,
+		MaterialModule
+	],
   providers: [],
   bootstrap: [AppComponent]
 })
