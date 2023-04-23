@@ -1,20 +1,5 @@
-<mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start">
-	<mat-tab label="First">
-		<div fxFlex="grow" fxLayout="column" style="background-color: lightblue">
-			<p>Enter a link for a github repository:</p>
-			<input (keyup.enter)="onKey($event)">
-			<p>{{currentGithubUrl}}</p>
-			<p>{{currentSelectedFiles}}</p>
-		</div>
-	</mat-tab>
-	<mat-tab label="Second">
-		<div fxFlex="grow" fxLayout="column" style="background-color: lightblue">
-			Content 
-		</div>
-	</mat-tab>
-	<mat-tab label="Third">
-		<div fxFlex="grow" fxLayout="column" style="background-color: lightblue">
-			Content 
-		</div>
-	</mat-tab>
-  </mat-tab-group>
+<p>Enter a link for a github repository:</p>
+<input (keyup.enter)="onKey($event)">
+<p>{{currentGithubUrl}}</p>
+<p>{{currentSelectedFiles}}</p>
+
