@@ -17,11 +17,14 @@ def root():
 def serve_static(filename):
     return send_from_directory(safe_join(app.root_path,'vis/dist/'), filename)
 
+# @app.route('')
+
 @app.route('/api/graph', methods=['GET'])
 def api_graph():
     
     # Get the url of the repository.
     repo_url = request.args.get("githuburl")
+    tree_path = "/"
     print(f'Received url: {repo_url}')
 
     # Get the name of the repository.
@@ -45,10 +48,10 @@ def api_graph():
     else:
         print(f'Found repository at: {repo_clone_path}')
 
-
+    path = "linux/arch/alpha/boot/tools"
     tree = {
         "nodes" : [
-            { "id": "1", "name": ".", "leaf": 0 },
+            { "id": "1", "name": "/", "leaf": 0 },
         ], 
         "links" : [
 
@@ -56,9 +59,9 @@ def api_graph():
     }
 
     print(f'Generating tree...')
-    generateTree(repo_clone_path, tree, 2, 1)
+    generateTreeAlongPath(path, 0, tree, 2, 1)
     json_object = json.dumps(tree, indent = 4)
-
+    print(json_object)
     print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
@@ -77,8 +80,46 @@ def listDirs(path):
     files = [f for f in files_and_dirs if not os.path.isfile(path+'/'+f)]
     return files
 
+def isDir(path):
+    return os.path.isdir(path)
 
-def generateTree(path, tree, next_id, src_id):
+def isFile(path):
+    return os.path.isfile(path)
+
+def generateTreeAlongPath(path, level, tree, next_id, src_id):
+    
+    pathforlevel_list = path.split('/')[:level+1]
+    pathforlevel = '/'.join(pathforlevel_list)
+    print(pathforlevel)
+
+
+    if os.path.isfile(pathforlevel):
+        return
+    
+    next_level_name = ""
+    next_src_id = -1
+    if(pathforlevel != path):
+        next_level_name = path.split("/")[level+1]
+    directories = listDirs(all_repo_root + "/" +  pathforlevel)
+    files = listFiles(all_repo_root + "/" + pathforlevel)
+    for file in files:
+        tree["nodes"].append({"id": str(next_id), "name": str(file), "leaf": 1})
+        tree["links"].append({ "source": str(src_id), "target": str(next_id) })
+        next_id +=1
+    for directory in directories:
+        if directory == next_level_name:
+            next_src_id = next_id
+        tree["nodes"].append({"id": str(next_id), "name": str(directory), "leaf": 0})
+        tree["links"].append({ "source": str(src_id), "target": str(next_id) })
+        next_id +=1
+    
+    if pathforlevel == path:
+        return
+
+    generateTreeAlongPath(path, level + 1, tree, next_id, next_src_id)
+
+
+def generateFullTree(path, tree, next_id, src_id):
     directories = listDirs(path)
     files = listFiles(path)
     next_dir_id = next_id + len(files) + len(directories)
@@ -89,7 +130,7 @@ def generateTree(path, tree, next_id, src_id):
     for directory in directories:
         tree["nodes"].append({"id": str(next_id), "name": str(directory), "leaf": 0})
         tree["links"].append({ "source": str(src_id), "target": str(next_id) })
-        num_nodes_added = generateTree(path+"/"+directory, tree, next_dir_id, next_id)
+        num_nodes_added = generateFullTree(path+"/"+directory, tree, next_dir_id, next_id)
         next_dir_id = next_dir_id + num_nodes_added
         next_id +=1
     return len(files) + len(directories)

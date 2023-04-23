@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { GraphComponent } from './graph/graph.component';
 import { LinkinputComponent } from './linkinput/linkinput.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatTabsModule} from '@angular/material/tabs'; 
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     AppRoutingModule,
-	HttpClientModule
+	HttpClientModule,
+ 	BrowserAnimationsModule,
+	MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
