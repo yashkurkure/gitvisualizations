@@ -9,12 +9,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
+import { PathinputComponent } from './pathinput/pathinput.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		GraphComponent,
-		LinkinputComponent
+		LinkinputComponent,
+  PathinputComponent
 	],
 	imports: [
 		BrowserModule,
