@@ -26,14 +26,13 @@ export class DataService {
 
 	graphUrl = 'api/graph';
 
-
-	private githubUrl = new BehaviorSubject<string>("https://github.com/yashkurkure/cs501-hw2")
+	private githubUrl = new BehaviorSubject<string>("https://github.com/yashkurkure/cs501-hw2.git")
 	currentGithubUrl = this.githubUrl.asObservable()
 
 	private selectedFiles = new BehaviorSubject<string>("No Files/Dirs selected")
 	currentselectedFiles = this.selectedFiles.asObservable()
 
-	private graphData = new BehaviorSubject<Observable<GraphDataRaw>>(this.http.get<GraphDataRaw>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2")}));
+	private graphData = new BehaviorSubject<Observable<GraphDataRaw>>(this.http.get<GraphDataRaw>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2.git")}));
 	currentGraphData = this.graphData.asObservable()
 
 
@@ -48,5 +47,9 @@ export class DataService {
 
 	updateSelectedFiles(selectedFiles: string): void {
 		this.selectedFiles.next(selectedFiles);
+	}
+
+	getCurrentGithubUrl(): string {
+		return this.githubUrl.getValue()
 	}
 }

@@ -1,6 +1,17 @@
 <div class="margins">
 	<mat-card>
 		<mat-card-header>
+		  <mat-card-title>You are veiwing:</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<h2 class="md-display-3">{{you_are_viewing}}</h2>
+		</mat-card-content>
+	</mat-card>
+</div>
+
+<div class="margins">
+	<mat-card>
+		<mat-card-header>
 		  <mat-card-title>Github</mat-card-title>
 		</mat-card-header>
 		<mat-card-content>
@@ -21,32 +32,26 @@
 <div class="margins">
 	<mat-card>
 		<mat-card-header>
-			<mat-card-title>Github URLs</mat-card-title>
+			<mat-card-title>Github Repositories</mat-card-title>
 		</mat-card-header>
-		<mat-selection-list dense>
-			<cdk-virtual-scroll-viewport 
-			  [itemSize]="20" 
-			  class="urls-list-viewport">
-				<mat-list-option
-				 *cdkVirtualFor="let item of githubUrls;"
-				 [value]="item" 
-				 [selected]="selection.isSelected(item)">
-				 	{{item}}
-				</mat-list-option>
-			</cdk-virtual-scroll-viewport>
-		</mat-selection-list>
-		<!-- <mat-selection-list #githubUrlSelectionList [multiple]="false">
-			<cdk-virtual-scroll-viewport 
-			[itemSize]="10" 
-			class="example-viewport">
-				<mat-list-item
-				*cdkVirtualFor="let url of githubUrls; let odd = odd;"
-				[class.example-alternate]="odd"
-				role="listitem"> 
-					{{url}}
-				</mat-list-item>
-			</cdk-virtual-scroll-viewport>
-		</mat-selection-list> -->
+		<mat-card-content>
+			<mat-selection-list #repolist [multiple]="false" [(ngModel)]="selected_reposotories" (ngModelChange)="onRepositorySelectionChanged($event)">
+				<cdk-virtual-scroll-viewport 
+				[itemSize]="20" 
+				class="urls-list-viewport">
+					<mat-list-option
+					*cdkVirtualFor="let item of repositories;"
+					[value]="item" 
+					[selected]="selection.isSelected(item)">
+						{{item}}
+					</mat-list-option>
+				</cdk-virtual-scroll-viewport>
+			</mat-selection-list>
+			<mat-divider></mat-divider>
+		</mat-card-content>
+		<mat-card-actions>
+		<button mat-raised-button color="primary" (click)="onLoadGithubUrlFromList($event)">LOAD REPOSITORY</button>
+		</mat-card-actions>
 	</mat-card>
 </div>
 

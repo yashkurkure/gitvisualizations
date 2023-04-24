@@ -98,11 +98,11 @@ export class GraphComponent {
 	loadGraph(): void {
 
 		this.data = this.dataCollapsableGraph(this.rawData)
-		console.log("DATA: ", this.data)
+		//console.log("DATA: ", this.data)
 		
 		//Get the tree that is visiable
 		const prunedTree = this.getPrunedTree(this.data)
-		console.log("PRUNED: ", JSON.stringify(prunedTree))
+		//console.log("PRUNED: ", JSON.stringify(prunedTree))
 
 		
 		const NODE_REL_SIZE = 1;
@@ -198,22 +198,22 @@ export class GraphComponent {
 
 	updateVisibleTree(node: Node, nodesById: any): void {
 
-		console.log("updateVis: N ", node)
+		//console.log("updateVis: N ", node)
 		this.visibleNodes.push(node)
 
 		if (node.collapsed) return;
 
 		this.visibleLinks.push(...node.childLinks);
 
-		console.log("updateVis: AN ", nodesById)
+		//console.log("updateVis: AN ", nodesById)
 		const children: Node[] = node.childLinks.map(link => {
-			console.log("\t map: ", link.target)
+			//console.log("\t map: ", link.target)
 			if(typeof link.target === 'object')
 				return link.target
 			else
 				return nodesById[link.target]
 		})
-		console.log("updateVis: C ", children)
+		//console.log("updateVis: C ", children)
 
 		children.forEach((cnode: Node) =>{
 			this.updateVisibleTree(cnode, nodesById)
