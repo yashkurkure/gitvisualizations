@@ -5,6 +5,7 @@ import { FileTree } from '../types';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {NestedTreeControl} from '@angular/cdk/tree';
 import { DataService } from '../data.service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 
 	/**
@@ -282,6 +283,17 @@ export class PathinputComponent implements OnInit{
 		// Check if the path is already there:
 		
 		
+	}
+
+	onPathCheckBoxChange(event: MatCheckboxChange, node: FileTree) {
+		const path = node.path;
+		if (event.checked) {
+			console.log("Add path", path)
+		}
+		else {
+			console.log("Remove path", path)
+		}
+
 	}
 
 	ngOnInit(): void {

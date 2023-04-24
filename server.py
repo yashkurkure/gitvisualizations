@@ -52,7 +52,7 @@ def file_tree():
     }
 
     print(f'Generating file tree...')
-    generateFileTree(repo_clone_path, tree["children"])
+    generateFileTree(repo_clone_path,"",tree["children"])
     json_object = json.dumps(tree, indent = 4)
     print(json_object)
     print(f'Sending response to frontend...')
@@ -63,7 +63,7 @@ def file_tree():
     )
     return response
 
-def generateFileTree(path, tree):
+def generateFileTree(path, parentPath, tree):
     directories = listDirs(path)
     files = listFiles(path)
     for directory in directories:
@@ -71,16 +71,16 @@ def generateFileTree(path, tree):
             continue
         node = {
             "name" : directory,
-            "path" : path + "/" + directory,
+            "path" : parentPath + "/" + directory,
             "isFile": 'true',
             "children" : [],
         }
         tree.append(node)
-        generateFileTree(path+"/"+directory, node["children"])
+        generateFileTree(path+"/"+directory, node["path"] ,node["children"])
     for file in files:
         tree.append({
             "name" : file,
-            "path" : path + "/" + file,
+            "path" : parentPath + "/" + file,
             "isFile": 'true',
             "children" : [],
         })
