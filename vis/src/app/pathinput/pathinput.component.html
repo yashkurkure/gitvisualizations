@@ -4,12 +4,12 @@
 			<mat-card-title>Repository Paths</mat-card-title>
 		</mat-card-header>
 		<mat-card-content>
-			<mat-selection-list #pathlist [(ngModel)]="selectedPaths" (ngModelChange)="onPathSelectionChanged($event)">
+			<mat-selection-list #pathlist [(ngModel)]="selectedPathsQuery" (ngModelChange)="onPathSelectionChanged($event)">
 				<cdk-virtual-scroll-viewport 
 				[itemSize]="20" 
 				class="urls-list-viewport">
 					<mat-list-option
-					*cdkVirtualFor="let item of paths;"
+					*cdkVirtualFor="let item of loadedpaths;"
 					[value]="item">
 						{{item}}
 					</mat-list-option>
@@ -23,18 +23,18 @@
 	</mat-card>
 </div>
 
-<div class="margins">
+<!-- <div class="margins">
 	<mat-card>
 		<mat-card-header>
 			<mat-card-title>Query List</mat-card-title>
 		</mat-card-header>
 		<mat-card-content>
-			<mat-selection-list #querylist [(ngModel)]="selectedFilesDirs" (ngModelChange)="onFilesDirSelectionChanged($event)">
+			<mat-selection-list #querylist [(ngModel)]="selectedFilesDirsQuery" (ngModelChange)="onFilesDirSelectionChanged($event)">
 				<cdk-virtual-scroll-viewport 
 				[itemSize]="20" 
 				class="urls-list-viewport">
 					<mat-list-option
-					*cdkVirtualFor="let item of fileDirs;"
+					*cdkVirtualFor="let item of loadedFileDirs;"
 					[value]="item">
 						{{item}}
 					</mat-list-option>
@@ -42,8 +42,8 @@
 			</mat-selection-list>
 			<mat-divider></mat-divider>
 		</mat-card-content>
-		<!-- <mat-card-actions>
+		<mat-card-actions>
 		<button mat-raised-button color="primary" (click)="onLoadGithubUrlFromList($event)">LOAD REPOSITORY</button>
-		</mat-card-actions> -->
+		</mat-card-actions>
 	</mat-card>
-</div>
+</div> -->
