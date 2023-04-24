@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
 	selector: 'app-linkinput',
@@ -10,7 +10,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class LinkinputComponent implements OnInit{
 
-	constructor(private dataService: DataService) { }
+	constructor(private dataService: DataService, private _snackBar: MatSnackBar) { }
 
 	// Form control for the github url input
 	githubUrlInputForm = new FormGroup({
@@ -45,11 +45,18 @@ export class LinkinputComponent implements OnInit{
 		// Get the input from the form field
 		const input: string = this.githubUrlInputForm.get('githubUrlInput')!.value;
 
-		// Add the new url to history
-		this.githubUrls.push(input)
-
-		// Update the value of the current selected url
-		this.dataService.updateGithubUrl(input)
+		// Check the validity of the guthub url
+		var isGithubUrl = require('is-github-url');
+		if(isGithubUrl(input, { strict: true })) {
+			// Add the new url to history
+			this.githubUrls.push(input)
+			// Update the value of the current selected url
+			this.dataService.updateGithubUrl(input)
+		} else {
+			this._snackBar.open("Invalid Github Repository", "CLOSE", {
+				duration: 3000
+			});
+		}
 
 		// Reset the input text box
 		this.githubUrlInputForm.get('githubUrlInput')!.reset();
