@@ -4,6 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { FileTree } from '../types';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {NestedTreeControl} from '@angular/cdk/tree';
+import { DataService } from '../data.service';
 
 
 	/**
@@ -44,6 +45,8 @@ export class PathinputComponent implements OnInit{
 
 	treeControl = new NestedTreeControl<FileTree>(node => node.children);
 	dataSource = new MatTreeNestedDataSource<FileTree>();
+
+	fileTree: FileTree;
 
 
 	sampleFileTree: FileTree = {
@@ -232,8 +235,14 @@ export class PathinputComponent implements OnInit{
 	// TODO: update to filetree
 	hasChild = (_: number, node: FileTree) => !!node.children && node.children.length > 0;
 	
-	constructor(private graphService: GraphService) {
-		this.dataSource.data = this.sampleFileTree.children;
+	constructor(private graphService: GraphService, private dataService: DataService) {
+		this.fileTree = dataService.defaultFileTree;
+		this.dataSource.data = this.fileTree.children;
+		
+		this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
+			this.fileTree = data;
+			this.dataSource.data = this.fileTree.children;
+		})
 	}
 
 	fullDatasource = [...this.sampleFileTree.children].map((item, index) => {

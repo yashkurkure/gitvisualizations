@@ -17,12 +17,8 @@ def root():
 def serve_static(filename):
     return send_from_directory(safe_join(app.root_path,'vis/dist/'), filename)
 
-# @app.route('')
-
-@app.route('/api/graph', methods=['GET'])
-def api_graph():
-    
-    # Get the url of the repository.
+@app.route('/api/filetree', methods=['GET'])
+def file_tree():
     repo_url = request.args.get("githuburl")
     tree_path = "/"
     print(f'Received url: {repo_url}')
@@ -47,6 +43,74 @@ def api_graph():
         print(f'Cloned repository at: {repo_clone_path}')
     else:
         print(f'Found repository at: {repo_clone_path}')
+    
+    tree = {
+        "name" : '.',
+        "path" : '.',
+        "isFile": 'false',
+        "children" : [],
+    }
+
+    print(f'Generating file tree...')
+    generateFileTree(repo_clone_path, tree["children"])
+    json_object = json.dumps(tree, indent = 4)
+    print(json_object)
+    print(f'Sending response to frontend...')
+    response = app.response_class(
+        response=json_object,
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+def generateFileTree(path, tree):
+    directories = listDirs(path)
+    files = listFiles(path)
+    for directory in directories:
+        node = {
+            "name" : directory,
+            "path" : path + "/" + directory,
+            "isFile": 'true',
+            "children" : [],
+        }
+        tree.append(node)
+        generateFileTree(path+"/"+directory, node["children"])
+    for file in files:
+        tree.append({
+            "name" : file,
+            "path" : path + "/" + file,
+            "isFile": 'true',
+            "children" : [],
+        })
+
+@app.route('/api/graph', methods=['GET'])
+def api_graph():
+    
+    # Get the url of the repository.
+    repo_url = request.args.get("githuburl")
+    tree_path = "/"
+    #print(f'Received url: {repo_url}')
+
+    # Get the name of the repository.
+    repo_name = repo_url.split('.git')[0].split('/')[-1]
+    #print(f'Repository name: {repo_name}')
+
+    # The place where the repo would be/is cloned.
+    repo_clone_path = all_repo_root + "/" + repo_name.lower() + "/"
+
+    # Check of the all_repo_root directory exists.
+    if not os.path.exists(all_repo_root):
+        # if not create it.
+        os.makedirs(all_repo_root)
+
+    # Check if the repository was already cloned.
+    if not os.path.exists(repo_clone_path):
+        # if not lets clone it.
+        #print("Cloning repository...")
+        Repo.clone_from(repo_url, repo_clone_path)
+        #print(f'Cloned repository at: {repo_clone_path}')
+    #else:
+        #print(f'Found repository at: {repo_clone_path}')
 
     path = "linux/arch/alpha/boot/tools"
     tree = {
@@ -58,11 +122,11 @@ def api_graph():
         ]
     }
 
-    print(f'Generating tree...')
+    #print(f'Generating tree...')
     generateTreeAlongPath(path, 0, tree, 2, 1)
     json_object = json.dumps(tree, indent = 4)
     #print(json_object)
-    print(f'Sending response to frontend...')
+    #print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
         status=200,
@@ -90,7 +154,7 @@ def generateTreeAlongPath(path, level, tree, next_id, src_id):
     
     pathforlevel_list = path.split('/')[:level+1]
     pathforlevel = '/'.join(pathforlevel_list)
-    print(pathforlevel)
+    #print(pathforlevel)
 
 
     if os.path.isfile(pathforlevel):
