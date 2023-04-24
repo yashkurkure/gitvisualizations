@@ -3,12 +3,13 @@ import { Component, OnInit, HostListener} from '@angular/core';
 import { DataService } from '../data.service';
 import ForceGraph3D from '3d-force-graph';
 import { BooleanKeyframeTrack } from 'three';
-import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw } from '../types';
+import { GraphDataRaw, GraphData, Node, NodeRaw, Link, LinkRaw, GraphViewConfig } from '../types';
 import { Observable } from 'rxjs';
 import * as THREE from "three";
 import * as d3 from "d3";
 import {CSS2DRenderer, CSS2DObject} from 'three-css2drender'
 import { Text } from "troika-three-text";
+import { GraphService } from '../graph.service';
 
 // TODO (Mouse events): https://fireflysemantics.medium.com/tracking-mouse-events-with-hostlistener-26dcc092692
 // TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
@@ -22,6 +23,9 @@ import { Text } from "troika-three-text";
   styleUrls: ['./graph.component.css']
 })
 export class GraphComponent {
+
+	// current graph view config
+	graphViewConfig: GraphViewConfig = this.graphService.defualtGraphViewConfig;
 
 	selectedFiles_txt = "None selected";
 	selectedFiles = new Set();
@@ -77,7 +81,7 @@ export class GraphComponent {
     }
 		
 	// Constructor.
-	constructor(private dataService: DataService) {
+	constructor(private dataService: DataService, private graphService: GraphService) {
 	}
 
 	//On Initialization of the component.
@@ -88,6 +92,20 @@ export class GraphComponent {
 				this.loadGraph()
 			})
 		});
+
+		this.graphService
+		.graphViewConfigObservable
+		.subscribe((newgvc: GraphViewConfig) => {
+			console.log("Updating graph with new config:", newgvc.viewValue)
+			if(this.graph) {
+				if (newgvc.value == 'none') {
+					this.graph.dagMode(null);
+				}
+				else {
+					this.graph.dagMode(newgvc.value)
+				}
+			}
+		})
 	}
 
 	changeNodeColor(node : Node): void {
@@ -108,7 +126,6 @@ export class GraphComponent {
 		const NODE_REL_SIZE = 1;
 		this.graph = ForceGraph3D()
 		(document.getElementById('graph')!)
-			.dagMode('td')
 			.dagLevelDistance(40)
 		.nodeThreeObject(node2 => {
 

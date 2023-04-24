@@ -14,3 +14,9 @@ export interface GraphData {
 	nodes: Node[]
 
 }
+
+export interface GraphViewConfig {
+	value: string,
+	viewValue: string
+}
+

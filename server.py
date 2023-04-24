@@ -61,7 +61,7 @@ def api_graph():
     print(f'Generating tree...')
     generateTreeAlongPath(path, 0, tree, 2, 1)
     json_object = json.dumps(tree, indent = 4)
-    print(json_object)
+    #print(json_object)
     print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,

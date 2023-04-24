@@ -1,5 +1,26 @@
 <mat-toolbar>
 	<span>Git Visuals</span>
+	<span class="spacer"></span>
+	<!-- <button mat-button [matMenuTriggerFor]="Graph Mode">Menu</button>
+	<mat-menu #menu="matMenu">
+		<button mat-menu-item>None</button>
+		<button mat-menu-item>Tree: Down</button>
+		<button mat-menu-item>Tree: Up</button>
+		<button mat-menu-item>Tree: Right</button>
+		<button mat-menu-item>Tree: Left</button>
+		<button mat-menu-item>Z Out</button>
+		<button mat-menu-item>Z In</button>
+		<button mat-menu-item>Radial: Out</button>
+		<button mat-menu-item>Radial: In</button>
+	</mat-menu> -->
+	<mat-form-field appearance="fill">
+		<mat-label>Graph Config</mat-label>
+		<mat-select (selectionChange)="onGraphViewConfigChanged($event)">
+		  <mat-option *ngFor="let config of graphViewConfigs" [value]="config">
+			{{config.viewValue}}
+		  </mat-option>
+		</mat-select>
+	  </mat-form-field>
 </mat-toolbar>
 
 <div class="split left" id="leftroot">

@@ -11,7 +11,9 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {MatCheckboxModule} from '@angular/material/checkbox'; 
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatSelectModule} from '@angular/material/select'; 
 
 const MaterialComponents = [
 	MatTabsModule,
@@ -27,8 +29,8 @@ const MaterialComponents = [
 	MatSnackBarModule,
 	ScrollingModule,
 	MatCheckboxModule,
-	
-
+	MatMenuModule,
+	MatSelectModule,
 ];
 
 @NgModule({
