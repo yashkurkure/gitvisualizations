@@ -13,7 +13,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatSelectModule} from '@angular/material/select'; 
+import {MatSelectModule} from '@angular/material/select';
+import {MatTreeModule} from '@angular/material/tree'; 
 
 const MaterialComponents = [
 	MatTabsModule,
@@ -31,6 +32,7 @@ const MaterialComponents = [
 	MatCheckboxModule,
 	MatMenuModule,
 	MatSelectModule,
+	MatTreeModule
 ];
 
 @NgModule({

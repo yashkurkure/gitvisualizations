@@ -20,4 +20,18 @@ export interface GraphViewConfig {
 	viewValue: string
 }
 
+export interface FileTree {
+	name: string,
+	path: string,
+	isFile: Boolean
+	children: FileTree[]
+}
+
+export interface Data {
+	repositortyName: string
+	repositoryUrl: string,
+	graphDataRaw: GraphDataRaw,
+	fileTree: string
+}
+
 
