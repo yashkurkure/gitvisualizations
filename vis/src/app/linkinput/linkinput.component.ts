@@ -24,7 +24,7 @@ export class LinkinputComponent implements OnInit{
 	currentSelectedFiles!: string;
 
 	// Store the history of urls enterted
-	githubUrlList: string[] = []
+	toDoList: string[] = ["A", "B", "C"]
 
 	ngOnInit(): void {
 		this.dataService.currentGithubUrl.subscribe(newGithubUrl=>{
@@ -44,7 +44,9 @@ export class LinkinputComponent implements OnInit{
 
 		// Get the input from the form field
 		const input: string = this.githubUrlInputForm.get('githubUrlInput')!.value;
-		console.log("New link entered", input);
+
+		// Add the new url to history
+		this.toDoList.push(input)
 
 		// Update the value of the current selected url
 		this.dataService.updateGithubUrl(input)
