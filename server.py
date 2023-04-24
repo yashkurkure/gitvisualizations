@@ -67,6 +67,8 @@ def generateFileTree(path, tree):
     directories = listDirs(path)
     files = listFiles(path)
     for directory in directories:
+        if (directory == '.git'):
+            continue
         node = {
             "name" : directory,
             "path" : path + "/" + directory,
