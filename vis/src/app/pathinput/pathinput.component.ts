@@ -255,24 +255,7 @@ export class PathinputComponent implements OnInit{
 		pathInput: new FormControl(),
 	});
 
-	// Path List
-	//selectedPathsQuery: Set<string> = new Set(['A']);
-	selectedPathsQuery: string[] = ['A'];
-	loadedpaths: Set<string> = new Set(['A', 'B', 'C']);
-
-	// Query List
-	selectedFilesDirsQuery: string[] = ["A"]
-	loadedFileDirs: string[] = ["A", "B" , "C"]
-
-
-	// Handler for path list selection change
-	onPathSelectionChanged(event: any) {
-		console.log(this.selectedPathsQuery);
-	}
-
-	onFilesDirSelectionChanged(event: any) {
-		
-	}
+	selectedPaths: Set<string> = new Set<string>();
 
 	// Handler for add path button
 	onLoadPath(event: any) {
@@ -288,12 +271,19 @@ export class PathinputComponent implements OnInit{
 	onPathCheckBoxChange(event: MatCheckboxChange, node: FileTree) {
 		const path = node.path;
 		if (event.checked) {
-			console.log("Add path", path)
+			//console.log("Add path", path)
+			this.selectedPaths.add(path);
 		}
 		else {
-			console.log("Remove path", path)
+			//console.log("Remove path", path)
+			this.selectedPaths.delete(path);
 		}
 
+	}
+
+	onUpdateGraph(event: any) {
+		console.log("Loading graph from paths")
+		console.log("Paths to load: ", Array.from(this.selectedPaths.values()));
 	}
 
 	ngOnInit(): void {

@@ -46,7 +46,7 @@ export class LinkinputComponent implements OnInit{
 	you_are_viewing: string = "";
 
 	ngOnInit(): void {
-		this.dataService.currentGithubUrl.subscribe(newGithubUrl=>{
+		this.dataService.githubUrlObservable.subscribe(newGithubUrl=>{
 			this.you_are_viewing = this.extractGitHubRepoPath(newGithubUrl)!
 			console.log("Fetched url: ", newGithubUrl)
 			if(!this.containsRepositoryURL(newGithubUrl)) {

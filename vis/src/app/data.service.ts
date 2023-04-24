@@ -26,58 +26,102 @@ export class DataService {
 	graphUrl = 'api/graph';
 	fileTreeUrl = 'api/filetree'
 
-	defaultGithubUrl = "https://github.com/yashkurkure/cs501-hw2.git"
-	private githubUrl = new BehaviorSubject<string>("https://github.com/yashkurkure/cs501-hw2.git")
-	currentGithubUrl = this.githubUrl.asObservable()
+	defaultGithubUrl = "https://github.com/yashkurkure/cs501-hw2.git";
+	currentGithubUrl = this.defaultGithubUrl;
+	private githubUrlBS = new BehaviorSubject<string>(this.defaultGithubUrl)
+	githubUrlObservable = this.githubUrlBS.asObservable()
 
-	private selectedFiles = new BehaviorSubject<string>("No Files/Dirs selected")
-	currentselectedFiles = this.selectedFiles.asObservable()
 
-	private currentGraphData2!: GraphDataRaw;
-	private graphData = new BehaviorSubject<Observable<GraphDataRaw>>(this.http.get<GraphDataRaw>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2.git")}));
-	currentGraphData = this.graphData.asObservable()
 
-	// private currentFileTree!: FileTree;
-	// private fileTreeBS = new BehaviorSubject<Observable<FileTree>>(this.http.get<FileTree>(this.graphUrl, {params: new HttpParams().append("githuburl", "https://github.com/yashkurkure/cs501-hw2.git")}));
-	// fileTreeObservable = this.fileTreeBS.asObservable()
+	defualtGraphDataRaw: GraphDataRaw = {
+		nodes: [
+			{id: 1, name: ".", leaf: 0},
+			{id: 2, name: "dir1", leaf: 0},
+			{id: 3, name: "dir2", leaf: 0},
+			{id: 4, name: "dir3", leaf: 0},
+			{id: 5, name: "file1", leaf: 1},
+			{id: 6, name: "file2", leaf: 1},
+			{id: 7, name: "file3", leaf: 1},
+			{id: 8, name: "file4", leaf: 1},
+		],
+		links: [
+			{source: 1, target: 2},
+			{source: 1, target: 3},
+			{source: 1, target: 5},
+
+			{source: 2, target: 6},
+
+			{source: 3, target: 7},
+			{source: 3, target: 4},
+
+			{source: 4, target: 8},
+		]
+	};
+	currentGraphDataRaw: GraphDataRaw = this.defualtGraphDataRaw;
+	private graphDataRawBS: BehaviorSubject<GraphDataRaw> = new BehaviorSubject<GraphDataRaw>(this.defualtGraphDataRaw);
+	public graphDataRawObservable: Observable<GraphDataRaw> = this.graphDataRawBS.asObservable()
 
 	defaultFileTree: FileTree = {name: "", isFile: false, path: "", children: []};
 	currentFileTree: FileTree = {name: "", isFile: false, path: "", children: []};
 	private fileTreeBS: BehaviorSubject<FileTree> = new BehaviorSubject<FileTree>(this.defaultFileTree);
 	public fileTreeObservable: Observable<FileTree> = this.fileTreeBS.asObservable();
 
+	defaultGraphPaths: string[] = []
+	currentGraphPaths: string[] = []
+	private graphPathsBS: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(this.defaultGraphPaths);
+	public graphPathsObservable: Observable<string[]> = this.graphPathsBS.asObservable();
+
 	constructor(private http: HttpClient) {
 
-		// this.fileTreeBS.getValue().subscribe((data: FileTree) => {
-		// 	this.currentFileTree = data;
-
-		// })
-
-		// this.graphData.getValue().subscribe((data: GraphDataRaw)=>{
-		// 	this.currentGraphData2 = data;
-		// });
-
-		let params = new HttpParams();
-		params = params.append("githuburl", this.defaultGithubUrl)
-		let httpObservable = this.http.get<FileTree>(this.fileTreeUrl, {params: params});
-		httpObservable.subscribe((data: FileTree)=>{
+		// Initialize the file tree
+		let params1 = new HttpParams();
+		params1 = params1.append("githuburl", this.defaultGithubUrl)
+		let httpObservable1 = this.http.get<FileTree>(this.fileTreeUrl, {params: params1});
+		httpObservable1.subscribe((data: FileTree)=>{
 			if(data) {
 				this.fileTreeBS.next(data);
 				this.currentFileTree = data;
 			}
 		})
+
+		// Initialize the graph data
+		let params2 = new HttpParams();
+		params2 = params2.append("githuburl", this.defaultGithubUrl)
+		let httpObservable2 = this.http.get<GraphDataRaw>(this.graphUrl, {params: params2});
+		httpObservable2.subscribe((data: GraphDataRaw)=>{
+			if(data) {
+				this.graphDataRawBS.next(data);
+				this.currentGraphDataRaw = data;
+			}
+		})
+
+		// Keep track of the current github url
+		this.githubUrlObservable.subscribe((data: string) => {
+			this.currentGithubUrl = data;
+		});
+
+		// Keep track of the current data
+		this.graphDataRawObservable.subscribe((data: GraphDataRaw) => {
+			this.currentGraphDataRaw = data;
+		});
 	}
 
 	
-
-
 	updateGithubUrl(githubUrl: string): void {
-		this.githubUrl.next(githubUrl)
+		this.githubUrlBS.next(githubUrl)
 
 		let params = new HttpParams();
 		params = params.append("githuburl", githubUrl)
 
-		this.graphData.next(this.http.get<GraphDataRaw>(this.graphUrl, {params: params}));
+		let httpObservable = this.http.get<GraphDataRaw>(this.graphUrl, {params: params});
+		httpObservable.subscribe((data: GraphDataRaw)=>{
+			if(data) {
+				this.graphDataRawBS.next(data);
+				this.currentGraphDataRaw = data;
+			}
+		})
+
+		this.githubUrlBS.next(githubUrl);
 		this.updateFileTree(githubUrl)
 	}
 
@@ -96,12 +140,13 @@ export class DataService {
 		
 	}
 
-	updateSelectedFiles(selectedFiles: string): void {
-		this.selectedFiles.next(selectedFiles);
+	updateGraphPaths(paths: string[]) {
+		this.graphPathsBS.next(paths);
+		// update the graph data
 	}
 
 	getCurrentGithubUrl(): string {
-		return this.githubUrl.getValue();
+		return this.githubUrlBS.getValue();
 	}
 
 	getCurrentFileTree(): FileTree {
@@ -110,7 +155,14 @@ export class DataService {
 	}
 
 	getCurrentGraphDataRaw(): GraphDataRaw {
-		let copy = Object.assign({}, this.currentGraphData2)
+		let copy = Object.assign({}, this.currentGraphDataRaw)
 		return copy;
 	}
+
+	getCurrentGraphPaths(): string[] {
+		let copy = Object.assign([], this.currentGraphPaths)
+		return copy;
+	}
+
+
 }

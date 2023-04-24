@@ -21,11 +21,11 @@ def serve_static(filename):
 def file_tree():
     repo_url = request.args.get("githuburl")
     tree_path = "/"
-    print(f'Received url: {repo_url}')
+    #print(f'Received url: {repo_url}')
 
     # Get the name of the repository.
     repo_name = repo_url.split('.git')[0].split('/')[-1]
-    print(f'Repository name: {repo_name}')
+    #print(f'Repository name: {repo_name}')
 
     # The place where the repo would be/is cloned.
     repo_clone_path = all_repo_root + "/" + repo_name.lower() + "/"
@@ -38,11 +38,11 @@ def file_tree():
     # Check if the repository was already cloned.
     if not os.path.exists(repo_clone_path):
         # if not lets clone it.
-        print("Cloning repository...")
+        #print("Cloning repository...")
         Repo.clone_from(repo_url, repo_clone_path)
-        print(f'Cloned repository at: {repo_clone_path}')
-    else:
-        print(f'Found repository at: {repo_clone_path}')
+        #print(f'Cloned repository at: {repo_clone_path}')
+    #else:
+        #print(f'Found repository at: {repo_clone_path}')
     
     tree = {
         "name" : '.',
@@ -51,17 +51,39 @@ def file_tree():
         "children" : [],
     }
 
-    print(f'Generating file tree...')
+    #print(f'Generating file tree...')
     generateFileTree(repo_clone_path,"",tree["children"])
     json_object = json.dumps(tree, indent = 4)
-    print(json_object)
-    print(f'Sending response to frontend...')
+    #print(json_object)
+    #print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
         status=200,
         mimetype='application/json'
     )
     return response
+
+# Generate using DFS
+def generateGraphData(path, tree, src_id, next_id): 
+
+    if isFile(path):
+        return next_id
+    
+    for entity in os.listdir(path):
+        if entity == '.git':
+            continue
+        tree["nodes"].append(
+            {
+                "id": next_id,
+                "name": str(entity),
+                "leaf": 1 if os.path.isfile(path+ "/" + entity) else 0,
+                # "path": path + "/" + entity
+            }
+        )
+        tree["links"].append({ "source": src_id, "target": next_id })
+        next_id  = generateGraphData(path + "/" + entity, tree, next_id, next_id + 1)
+    
+    return next_id
 
 def generateFileTree(path, parentPath, tree):
     directories = listDirs(path)
@@ -91,14 +113,14 @@ def api_graph():
     # Get the url of the repository.
     repo_url = request.args.get("githuburl")
     tree_path = "/"
-    #print(f'Received url: {repo_url}')
+    print(f'Received url: {repo_url}')
 
     # Get the name of the repository.
     repo_name = repo_url.split('.git')[0].split('/')[-1]
-    #print(f'Repository name: {repo_name}')
+    print(f'Repository name: {repo_name}')
 
     # The place where the repo would be/is cloned.
-    repo_clone_path = all_repo_root + "/" + repo_name.lower() + "/"
+    repo_clone_path = all_repo_root + "/" + repo_name.lower()
 
     # Check of the all_repo_root directory exists.
     if not os.path.exists(all_repo_root):
@@ -108,26 +130,29 @@ def api_graph():
     # Check if the repository was already cloned.
     if not os.path.exists(repo_clone_path):
         # if not lets clone it.
-        #print("Cloning repository...")
+        print("Cloning repository...")
         Repo.clone_from(repo_url, repo_clone_path)
-        #print(f'Cloned repository at: {repo_clone_path}')
-    #else:
-        #print(f'Found repository at: {repo_clone_path}')
+        print(f'Cloned repository at: {repo_clone_path}')
+    else:
+        print(f'Found repository at: {repo_clone_path}')
 
-    path = "linux/arch/alpha/boot/tools"
+    # path = "linux/arch/alpha/boot/tools"
     tree = {
         "nodes" : [
-            { "id": "1", "name": "/", "leaf": 0 },
+            { "id": 1, "name": "/", "leaf": 0 },
         ], 
         "links" : [
 
         ]
     }
 
-    #print(f'Generating tree...')
-    generateTreeAlongPath(path, 0, tree, 2, 1)
+    # Generate the full tree and save it
+    #generateFullTree(repo_clone_path, tree, 2, 1)
+    generateGraphData(repo_clone_path, tree, 1, 2)
+    print(f'Generating tree...')
+    #generateTreeAlongPath(path, 0, tree, 2, 1)
     json_object = json.dumps(tree, indent = 4)
-    #print(json_object)
+    print(json_object)
     #print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
@@ -143,8 +168,8 @@ def listFiles(path):
 
 def listDirs(path):
     files_and_dirs = os.listdir(path)
-    files = [f for f in files_and_dirs if not os.path.isfile(path+'/'+f)]
-    return files
+    dirs = [f for f in files_and_dirs if not os.path.isfile(path+'/'+f)]
+    return dirs
 
 def isDir(path):
     return os.path.isdir(path)
@@ -190,12 +215,14 @@ def generateFullTree(path, tree, next_id, src_id):
     files = listFiles(path)
     next_dir_id = next_id + len(files) + len(directories)
     for file in files:
-        tree["nodes"].append({"id": str(next_id), "name": str(file), "leaf": 1})
-        tree["links"].append({ "source": str(src_id), "target": str(next_id) })
+        tree["nodes"].append({"id": next_id, "name": str(file), "val": 1})
+        tree["links"].append({ "source": src_id, "target": next_id })
         next_id +=1
     for directory in directories:
-        tree["nodes"].append({"id": str(next_id), "name": str(directory), "leaf": 0})
-        tree["links"].append({ "source": str(src_id), "target": str(next_id) })
+        if directory == '.git':
+            continue
+        tree["nodes"].append({"id": next_id, "name": str(directory), "val": 0})
+        tree["links"].append({ "source": src_id, "target": next_id })
         num_nodes_added = generateFullTree(path+"/"+directory, tree, next_dir_id, next_id)
         next_dir_id = next_dir_id + num_nodes_added
         next_id +=1

@@ -37,27 +37,13 @@
 	</mat-card>
 </div>
 
-<!-- <div class="margins">
+<div class="margins">
 	<mat-card>
 		<mat-card-header>
-			<mat-card-title>Query List</mat-card-title>
+			<mat-card-title>Actions</mat-card-title>
 		</mat-card-header>
-		<mat-card-content>
-			<mat-selection-list #querylist [(ngModel)]="selectedFilesDirsQuery" (ngModelChange)="onFilesDirSelectionChanged($event)">
-				<cdk-virtual-scroll-viewport 
-				[itemSize]="20" 
-				class="urls-list-viewport">
-					<mat-list-option
-					*cdkVirtualFor="let item of loadedFileDirs;"
-					[value]="item">
-						{{item}}
-					</mat-list-option>
-				</cdk-virtual-scroll-viewport>
-			</mat-selection-list>
-			<mat-divider></mat-divider>
-		</mat-card-content>
 		<mat-card-actions>
-		<button mat-raised-button color="primary" (click)="onLoadGithubUrlFromList($event)">LOAD REPOSITORY</button>
+		<button mat-raised-button color="primary" (click)="onUpdateGraph($event)">UPDATE GRAPH</button>
 		</mat-card-actions>
 	</mat-card>
-</div> -->
+</div>
