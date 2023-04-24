@@ -20,3 +20,23 @@ mat-form-field {
     border-style: solid;
     border-width: medium;
 }
+
+mat-list {
+    flex-grow: 1;
+    border: 3px solid green;
+    overflow: auto;
+}
+
+.urls-list-viewport {
+	height: 300px;
+	width: 100%;
+}
+
+.example-alternate {
+background: rgba(127, 127, 127, 0.3);
+}
+
+.example-select-all {
+float: right;
+margin-right: 32px;
+}

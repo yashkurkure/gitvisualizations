@@ -19,21 +19,37 @@
 </div>
 
 <div class="margins">
-
 	<mat-card>
 		<mat-card-header>
 			<mat-card-title>Github URLs</mat-card-title>
 		</mat-card-header>
-		<mat-selection-list #githubUrlSelectionList [multiple]="false">
-			<mat-list-option *ngFor="let url of githubUrls" [value]="url">
-				{{url}}
-			</mat-list-option>
+		<mat-selection-list dense>
+			<cdk-virtual-scroll-viewport 
+			  [itemSize]="20" 
+			  class="urls-list-viewport">
+				<mat-list-option
+				 *cdkVirtualFor="let item of githubUrls;"
+				 [value]="item" 
+				 [selected]="selection.isSelected(item)">
+				 	{{item}}
+				</mat-list-option>
+			</cdk-virtual-scroll-viewport>
 		</mat-selection-list>
+		<!-- <mat-selection-list #githubUrlSelectionList [multiple]="false">
+			<cdk-virtual-scroll-viewport 
+			[itemSize]="10" 
+			class="example-viewport">
+				<mat-list-item
+				*cdkVirtualFor="let url of githubUrls; let odd = odd;"
+				[class.example-alternate]="odd"
+				role="listitem"> 
+					{{url}}
+				</mat-list-item>
+			</cdk-virtual-scroll-viewport>
+		</mat-selection-list> -->
 	</mat-card>
 </div>
 
-<p>
-	Option selected: {{githubUrlSelectionList .selectedOptions.hasValue() ? githubUrlSelectionList .selectedOptions.selected[0].value : 'None'}}
-</p>
-
-
+				<!-- <mat-list-option *ngFor="let url of githubUrls" [value]="url">
+					{{url}}
+				</mat-list-option> -->

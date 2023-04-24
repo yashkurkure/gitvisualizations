@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatSelectionListChange } from '@angular/material/list';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
 	selector: 'app-linkinput',
@@ -11,6 +14,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService, private _snackBar: MatSnackBar) { }
+
+	selection = new SelectionModel(true);
+
+	onSelectionChange(selection: MatSelectionListChange) {
+	}
+  
+	onSelectAll(e: MatCheckboxChange) {
+	}
 
 	// Form control for the github url input
 	githubUrlInputForm = new FormGroup({
@@ -50,6 +61,10 @@ export class LinkinputComponent implements OnInit{
 		if(isGithubUrl(input, { strict: true })) {
 			// Add the new url to history
 			this.githubUrls.push(input)
+
+			// NOTE: So that virtual scrolling detects changes
+			this.githubUrls = [...this.githubUrls]
+
 			// Update the value of the current selected url
 			this.dataService.updateGithubUrl(input)
 		} else {

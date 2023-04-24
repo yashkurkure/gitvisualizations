@@ -9,7 +9,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
-import {MatSnackBarModule} from '@angular/material/snack-bar'; 
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {MatCheckboxModule} from '@angular/material/checkbox'; 
 
 const MaterialComponents = [
 	MatTabsModule,
@@ -23,6 +25,10 @@ const MaterialComponents = [
 	MatDividerModule,
 	MatListModule,
 	MatSnackBarModule,
+	ScrollingModule,
+	MatCheckboxModule,
+	
+
 ];
 
 @NgModule({
