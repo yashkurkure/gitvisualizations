@@ -1,11 +1,3 @@
-<!-- <div class="center">Enter a link for a github repository</div>
-<input (keyup.enter)="onKey($event)">
-<p>{{currentGithubUrl}}</p> -->
-
-<!-- <mat-form-field appearance="fill">
-	<mat-label>{{currentGithubUrl}}</mat-label>
-	<input matInput (cdkAutofill)="firstNameAutofilled = $event.isAutofilled">
-</mat-form-field> -->
 <div class="margins">
 	<mat-card>
 		<mat-card-header>
@@ -13,7 +5,7 @@
 		</mat-card-header>
 		<mat-card-content>
 			<form [formGroup]="githubUrlInputForm">
-				<mat-form-field hintLabel="Current:" appearance="outline">
+				<mat-form-field appearance="outline">
 					<mat-label>Enter a Github URL</mat-label>
 					<input formControlName="githubUrlInput" matInput>
 				</mat-form-field>
@@ -21,7 +13,7 @@
 			<mat-divider></mat-divider>
 		</mat-card-content>
 		<mat-card-actions>
-		  <button mat-button (click)="onLoadGithubUrl($event)">LOAD REPOSITORY</button>
+		  <button mat-raised-button color="primary" (click)="onLoadGithubUrl($event)">LOAD REPOSITORY</button>
 		</mat-card-actions>
 	</mat-card>
 </div>
@@ -29,10 +21,19 @@
 <div class="margins">
 
 	<mat-card>
-		<mat-list>
-			<mat-list-item *ngFor="let toDo of toDoList; let i = index" (click)="toDoList.splice(i, 1)">{{ toDo }}></mat-list-item>
-		</mat-list>
+		<mat-card-header>
+			<mat-card-title>Github URLs</mat-card-title>
+		</mat-card-header>
+		<mat-selection-list #githubUrlSelectionList [multiple]="false">
+			<mat-list-option *ngFor="let url of githubUrls" [value]="url">
+				{{url}}
+			</mat-list-option>
+		</mat-selection-list>
 	</mat-card>
 </div>
+
+<p>
+	Option selected: {{githubUrlSelectionList .selectedOptions.hasValue() ? githubUrlSelectionList .selectedOptions.selected[0].value : 'None'}}
+</p>
 
 
