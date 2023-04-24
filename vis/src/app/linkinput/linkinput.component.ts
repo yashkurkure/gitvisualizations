@@ -11,6 +11,9 @@ export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService) { }
 
+	firstNameAutofilled!: boolean;
+	lastNameAutofilled!: boolean;
+
 	// subscribed to data service
 	currentGithubUrl!: string;
 
