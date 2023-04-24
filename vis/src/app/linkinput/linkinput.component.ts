@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 
 @Component({
@@ -11,14 +12,19 @@ export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService) { }
 
-	firstNameAutofilled!: boolean;
-	lastNameAutofilled!: boolean;
+	// Form control for the github url input
+	githubUrlInputForm = new FormGroup({
+		githubUrlInput: new FormControl(),
+	  });
 
 	// subscribed to data service
 	currentGithubUrl!: string;
 
 	// subscribed to data service
 	currentSelectedFiles!: string;
+
+	// Store the history of urls enterted
+	githubUrlList: string[] = []
 
 	ngOnInit(): void {
 		this.dataService.currentGithubUrl.subscribe(newGithubUrl=>{
@@ -30,8 +36,20 @@ export class LinkinputComponent implements OnInit{
 		});
 	}
 
-	onKey(event: any) {
-		console.log("New link entered")
-		this.dataService.updateGithubUrl(event.target.value);
+	/**
+	 * Handler for the github input text box.
+	 * @param event 
+	 */
+	onLoadGithubUrl(event: any) {
+
+		// Get the input from the form field
+		const input: string = this.githubUrlInputForm.get('githubUrlInput')!.value;
+		console.log("New link entered", input);
+
+		// Update the value of the current selected url
+		this.dataService.updateGithubUrl(input)
+
+		// Reset the input text box
+		this.githubUrlInputForm.get('githubUrlInput')!.reset();
 	}
 }
