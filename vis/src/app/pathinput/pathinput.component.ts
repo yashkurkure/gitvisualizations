@@ -7,4 +7,20 @@ import { Component } from '@angular/core';
 })
 export class PathinputComponent {
 
+	// Path List
+	selectedPaths: string[] = ["A"]
+	paths: string[] = ["A", "B" , "C"]
+
+	// Query List
+	selectedFilesDirs: string[] = ["A"]
+	fileDirs: string[] = ["A", "B" , "C"]
+
+	onFilesDirSelectionChanged(event: any) {
+
+	}
+
+	onPathSelectionChanged(event: any) {
+
+	}
+
 }

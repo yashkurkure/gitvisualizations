@@ -1,0 +1,42 @@
+.margins {
+	margin-top: 20px;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+
+mat-form-field {
+	width: 100%;
+}
+
+.githubUrlItem {
+	margin-top: 5px;
+	margin-right: 5px;
+	margin-left: 5px;
+	margin-bottom: 5px;
+}
+
+.outline {
+    border-style: solid;
+    border-width: medium;
+}
+
+mat-list {
+    flex-grow: 1;
+    border: 3px solid green;
+    overflow: auto;
+}
+
+.urls-list-viewport {
+	height: 200px;
+	width: 100%;
+}
+
+.example-alternate {
+background: rgba(127, 127, 127, 0.3);
+}
+
+.example-select-all {
+float: right;
+margin-right: 32px;
+}

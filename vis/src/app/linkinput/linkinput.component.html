@@ -41,8 +41,7 @@
 				class="urls-list-viewport">
 					<mat-list-option
 					*cdkVirtualFor="let item of repositories;"
-					[value]="item" 
-					[selected]="selection.isSelected(item)">
+					[value]="item">
 						{{item}}
 					</mat-list-option>
 				</cdk-virtual-scroll-viewport>

@@ -15,8 +15,6 @@ export class LinkinputComponent implements OnInit{
 
 	constructor(private dataService: DataService, private _snackBar: MatSnackBar) { }
 
-	selection = new SelectionModel(true);
-
 	onRepositorySelectionChanged(event: any) {
 
 		let reponame: string = event[0];

@@ -1,1 +1,49 @@
-<p>pathinput works!</p>
+<div class="margins">
+	<mat-card>
+		<mat-card-header>
+			<mat-card-title>Repository Paths</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-selection-list #pathlist [(ngModel)]="selectedPaths" (ngModelChange)="onPathSelectionChanged($event)">
+				<cdk-virtual-scroll-viewport 
+				[itemSize]="20" 
+				class="urls-list-viewport">
+					<mat-list-option
+					*cdkVirtualFor="let item of paths;"
+					[value]="item">
+						{{item}}
+					</mat-list-option>
+				</cdk-virtual-scroll-viewport>
+			</mat-selection-list>
+			<mat-divider></mat-divider>
+		</mat-card-content>
+		<!-- <mat-card-actions>
+		<button mat-raised-button color="primary" (click)="onLoadGithubUrlFromList($event)">LOAD REPOSITORY</button>
+		</mat-card-actions> -->
+	</mat-card>
+</div>
+
+<div class="margins">
+	<mat-card>
+		<mat-card-header>
+			<mat-card-title>Query List</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-selection-list #querylist [(ngModel)]="selectedFilesDirs" (ngModelChange)="onFilesDirSelectionChanged($event)">
+				<cdk-virtual-scroll-viewport 
+				[itemSize]="20" 
+				class="urls-list-viewport">
+					<mat-list-option
+					*cdkVirtualFor="let item of fileDirs;"
+					[value]="item">
+						{{item}}
+					</mat-list-option>
+				</cdk-virtual-scroll-viewport>
+			</mat-selection-list>
+			<mat-divider></mat-divider>
+		</mat-card-content>
+		<!-- <mat-card-actions>
+		<button mat-raised-button color="primary" (click)="onLoadGithubUrlFromList($event)">LOAD REPOSITORY</button>
+		</mat-card-actions> -->
+	</mat-card>
+</div>
