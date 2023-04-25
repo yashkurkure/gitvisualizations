@@ -243,6 +243,7 @@ export class PathinputComponent implements OnInit{
 		this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
 			this.fileTree = data;
 			this.dataSource.data = this.fileTree.children;
+			this.selectedPaths.clear()
 		})
 	}
 

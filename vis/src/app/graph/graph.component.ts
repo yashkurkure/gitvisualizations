@@ -85,8 +85,11 @@ export class GraphComponent {
 		this.dataService.graphDataRawObservable.subscribe((data: GraphDataRaw) => {
 			this.data = data;
 			console.log(this.data)
-			this.loadGraph();
+			if(this.graph) {
+				this.graph.graphData(this.dataService.currentGraphDataRaw)
+			}
 		})
+		this.loadGraph();
 	}
 
 	// changeNodeColor(node : Node): void {

@@ -85,6 +85,7 @@ export class LinkinputComponent implements OnInit{
 			if(this.containsRepositoryURL(input)) {
 				this.addRepository(input);
 				this.dataService.updateGithubUrl(input)
+				//this.dataService.updateGraphPaths(this.dataService.defaultGraphPaths);
 			}
 
 		} else {

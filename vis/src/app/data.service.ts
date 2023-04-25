@@ -113,6 +113,7 @@ export class DataService implements OnInit{
 		// Keep track of the current selected paths
 		this.graphPathsObservable.subscribe((data: string[])=>{
 			this.currentGraphPaths = data;
+			
 		})
 	}
 	ngOnInit(): void {
@@ -143,6 +144,7 @@ export class DataService implements OnInit{
 
 		this.githubUrlBS.next(githubUrl);
 		this.updateFileTree(githubUrl)
+		this.updateGraphPaths([]);
 	}
 
 	updateFileTree(githubUrl: string): void {
