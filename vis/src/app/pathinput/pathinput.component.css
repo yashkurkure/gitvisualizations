@@ -67,3 +67,7 @@ margin-right: 32px;
   .example-tree div[role=group] > .mat-tree-node {
 	padding-left: 40px;
   }
+
+  .example-tree-progress-bar {
+	margin-left: 30px;
+  }

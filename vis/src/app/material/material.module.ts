@@ -15,6 +15,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTreeModule} from '@angular/material/tree'; 
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 const MaterialComponents = [
 	MatTabsModule,
@@ -32,7 +33,8 @@ const MaterialComponents = [
 	MatCheckboxModule,
 	MatMenuModule,
 	MatSelectModule,
-	MatTreeModule
+	MatTreeModule,
+	MatProgressBarModule,
 ];
 
 @NgModule({
