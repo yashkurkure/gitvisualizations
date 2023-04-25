@@ -67,6 +67,8 @@ def file_tree():
 # Generate using DFS
 def generateGraphData(path, tree, src_id, next_id): 
 
+    # print("GenerateGraphData:", path)
+
     if isFile(path):
         return next_id
     
@@ -99,13 +101,21 @@ def generatePathTree(paths, repoPath):
 
     for path in paths:
         prev_node_id = src_id
-        prev_node_path = ""
         nodepath = ""
         for nodename in path.split('/'):
 
             # Include everything below
             if(nodename == '*'):
-                next_id = generateGraphData( repoPath + prev_node_path, result, prev_node_id, next_id)
+                subtree = {"nodes": [], "links": []}
+                next_id = generateGraphData( repoPath + nodepath, subtree, prev_node_id, next_id)
+                print(subtree)
+                for subnode in subtree['nodes']:
+                    nodes.add((subnode['id'], subnode['name'], subnode['leaf'], subnode['path']))
+                    node_id_map[subnode['name']] = subnode['id']
+
+                for sublink in subtree['links']:
+                    links.add((sublink['source'], sublink['target']))
+                continue
 
 
             if(nodename == ''):
@@ -116,12 +126,14 @@ def generatePathTree(paths, repoPath):
                 nodeid = node_id_map[nodename]
                 # the prev id for the next nodes should be the id of this node
                 prev_node_id = nodeid
+                nodepath = nodepath + "/" + nodename
                 continue
-            prev_node_path = nodepath
-            nodepath = "/" + nodename
+
+            nodepath = nodepath + "/" + nodename
             nodeData = (next_id, nodename, 1 if os.path.isfile(nodepath) else 0, nodepath)
             linkData = (prev_node_id, next_id)
             nodes.add(nodeData)
+            print(nodeData)
             node_id_map[nodename] = next_id
             links.add(linkData)
             prev_node_id = next_id
@@ -209,8 +221,8 @@ def api_graph():
 
     # Generate the full tree and save it
     #generateFullTree(repo_clone_path, tree, 2, 1)
-    generateGraphData(repo_clone_path, tree, 1, 2)
-    print(f'Generating tree...')
+    # generateGraphData(repo_clone_path, tree, 1, 2)
+    # print(f'Generating tree...')
     #generateTreeAlongPath(path, 0, tree, 2, 1)
     json_object = json.dumps(generatePathTree(paths, repo_clone_path), indent = 4)
     #print(f'Sending response to frontend...')

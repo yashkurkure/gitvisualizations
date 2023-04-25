@@ -99,18 +99,18 @@ export class GraphComponent {
 		this.graph = ForceGraph3D()
 		(document.getElementById('graph')!)
 		// .dagLevelDistance(40)
-		// .nodeThreeObject(node2 => {
+		.nodeThreeObject(node2 => {
 
-		// 	const node: Node = node2 as Node
-		// 	const text = new Text();
-		// 	Object.assign(text, {
-		// 	text: node.name,
-		// 	fontSize: 2,
-		// 	});
-		// 	return text
+			const node: Node = node2 as Node
+			const text = new Text();
+			Object.assign(text, {
+			text: node.name,
+			fontSize: 2,
+			});
+			return text
 
-		//   })
-		// .nodeThreeObjectExtend(true)
+		  })
+		.nodeThreeObjectExtend(true)
 		// .onNodeClick((node: Object, event: MouseEvent) => {
 		// 	const node2: Node = node as Node
 		// 	if(node2.childLinks.length) {
