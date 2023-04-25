@@ -257,31 +257,45 @@ export class PathinputComponent implements OnInit{
 
 	selectedPaths: Set<string> = new Set<string>();
 
-	// Handler for add path button
-	onLoadPath(event: any) {
-
-		// Get the input from the form field
-		const path: string = this.pathInputForm.get('pathInput')!.value;
-
-		// Check if the path is already there:
-		
-		
-	}
-
 	onPathCheckBoxChange(event: MatCheckboxChange, node: FileTree) {
 		const path = node.path;
 		if (event.checked) {
 			//console.log("Add path", path)
-			this.selectedPaths.add(path);
+			//this.selectedPaths.add(path);
+			// if the node is a directory select the files in it
+			console.log(node.isFile)
+			if(!node.isFile){
+				console.log("Adding directory from paths")
+				this.selectedPaths.add(path + "/*");
+			} else {
+				this.selectedPaths.delete(path);
+			}
 		}
 		else {
 			//console.log("Remove path", path)
-			this.selectedPaths.delete(path);
+			//this.selectedPaths.delete(path);
+			console.log(node.isFile)
+			if(!node.isFile){
+				console.log("Removing directory from paths")
+				this.selectedPaths.delete(path + "/*");
+			} else {
+				this.selectedPaths.delete(path);
+			}
+			// // if the node is a directory deselect the files in it
+			// if(!node.isFile){
+			// 	node.children.forEach((child: FileTree) => {
+			// 		this.selectedPaths.delete(child.path);
+			// 	})
+			// }
 		}
+		this.updateGraphPaths()
 
 	}
+	
+	
 
-	onUpdateGraph(event: any) {
+
+	updateGraphPaths() {
 		console.log("Loading graph from paths")
 		console.log("Paths to load: ", Array.from(this.selectedPaths.values()));
 		this.dataService.updateGraphPaths( Array.from(this.selectedPaths.values()));

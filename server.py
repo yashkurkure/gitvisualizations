@@ -48,7 +48,7 @@ def file_tree():
     tree = {
         "name" : '.',
         "path" : '.',
-        "isFile": 'false',
+        "isFile": 0,
         "children" : [],
     }
 
@@ -87,19 +87,26 @@ def generateGraphData(path, tree, src_id, next_id):
     return next_id
 
 # Generate using DFS
-def generatePathTree(paths):
+def generatePathTree(paths, repoPath):
 
     node_id_map = {}
     nodes = set({(0, "/", 0, "")})
     links = set({})
+    result = {"nodes": [], "links": []}
 
     next_id = 1
     src_id = 0
 
     for path in paths:
         prev_node_id = src_id
+        prev_node_path = ""
         nodepath = ""
         for nodename in path.split('/'):
+
+            # Include everything below
+            if(nodename == '*'):
+                next_id = generateGraphData( repoPath + prev_node_path, result, prev_node_id, next_id)
+
 
             if(nodename == ''):
                 continue
@@ -110,7 +117,7 @@ def generatePathTree(paths):
                 # the prev id for the next nodes should be the id of this node
                 prev_node_id = nodeid
                 continue
-
+            prev_node_path = nodepath
             nodepath = "/" + nodename
             nodeData = (next_id, nodename, 1 if os.path.isfile(nodepath) else 0, nodepath)
             linkData = (prev_node_id, next_id)
@@ -120,23 +127,23 @@ def generatePathTree(paths):
             prev_node_id = next_id
             next_id+=1
     
-    nodes_list = []
+
     for nodedata in nodes:
-        nodes_list.append({
+        result['nodes'].append({
                 "id": nodedata[0],
                 "name": nodedata[1],
                 "leaf": nodedata[2],
                 "path": nodedata[3]
             })
-    links_list = []
+
     for linkdata in links:
-        links_list.append({
+        result['links'].append({
                 "source": linkdata[0],
                 "target": linkdata[1]
             })
 
 
-    return {"nodes": nodes_list, "links": links_list}
+    return result
 
 def generateFileTree(path, parentPath, tree):
     directories = listDirs(path)
@@ -147,7 +154,7 @@ def generateFileTree(path, parentPath, tree):
         node = {
             "name" : directory,
             "path" : parentPath + "/" + directory,
-            "isFile": 'true',
+            "isFile": 0,
             "children" : [],
         }
         tree.append(node)
@@ -156,7 +163,7 @@ def generateFileTree(path, parentPath, tree):
         tree.append({
             "name" : file,
             "path" : parentPath + "/" + file,
-            "isFile": 'true',
+            "isFile": 1,
             "children" : [],
         })
 
@@ -168,7 +175,6 @@ def api_graph():
     # Get the url of the repository.
     repo_url = content['repourl']
     paths = content['paths']
-    print(generatePathTree(paths))
 
     # Get the name of the repository.
     repo_name = repo_url.split('.git')[0].split('/')[-1]
@@ -206,7 +212,7 @@ def api_graph():
     generateGraphData(repo_clone_path, tree, 1, 2)
     print(f'Generating tree...')
     #generateTreeAlongPath(path, 0, tree, 2, 1)
-    json_object = json.dumps(generatePathTree(paths), indent = 4)
+    json_object = json.dumps(generatePathTree(paths, repo_clone_path), indent = 4)
     #print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,

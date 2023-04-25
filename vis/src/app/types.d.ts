@@ -23,7 +23,7 @@ export interface GraphViewConfig {
 export interface FileTree {
 	name: string,
 	path: string,
-	isFile: Boolean
+	isFile: boolean
 	children: FileTree[]
 }
 

@@ -15,7 +15,7 @@ import { GraphService } from '../graph.service';
 // TODO (THREE selection): https://github.com/mrdoob/three.js/blob/master/examples/misc_boxselection.html
 // TODO (ray castig)
 
-
+type DagMode = string
 
 @Component({
   selector: 'app-graph',
@@ -145,6 +145,8 @@ export class GraphComponent {
 		// this.updateHighlight();
 		// })
 		.graphData(this.dataService.currentGraphDataRaw)
+
+		this.graph.dagMode(this.graphService.getGraphViewConfig().value)
 
 	}
 
