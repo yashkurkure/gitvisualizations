@@ -268,7 +268,7 @@ export class PathinputComponent implements OnInit{
 				console.log("Adding directory from paths")
 				this.selectedPaths.add(path + "/*");
 			} else {
-				this.selectedPaths.delete(path);
+				this.selectedPaths.add(path);
 			}
 		}
 		else {
