@@ -19,7 +19,7 @@ import {map} from 'rxjs/operators';
 export class DynamicDatabase {
   dataMap = new Map<string, string[]>([
     ['Fruits', ['Apple', 'Orange', 'Banana']],
-    ['Vegetables', ['Tomato', 'Potato', 'Onion']],
+    ['Vegetables', ['Tomato', 'Potato', 'Onion', 'Broccoli']],
     ['Apple', ['Fuji', 'Macintosh']],
     ['Onion', ['Yellow', 'White', 'Purple']],
   ]);
@@ -203,7 +203,7 @@ export class PathinputComponent implements OnInit{
 		
 		// this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
 		// 	this.fileTree = data;
-		// 	this.dataSource.data = this.fileTree.children;
+		// this.dataSource.data = this.fileTree.children;
 		// 	this.selectedPaths.clear()
 		// })
 	}

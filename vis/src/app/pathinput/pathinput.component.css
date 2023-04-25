@@ -71,3 +71,9 @@ margin-right: 32px;
   .example-tree-progress-bar {
 	margin-left: 30px;
   }
+
+  .scrollable-tree {
+	max-height: 400px; /* Adjust this value to set the desired maximum height of the tree container */
+	overflow-y: auto; /* Enables vertical scrolling when content exceeds the maximum height */
+  }
+  
