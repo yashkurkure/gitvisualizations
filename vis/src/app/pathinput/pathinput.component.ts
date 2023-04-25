@@ -284,6 +284,7 @@ export class PathinputComponent implements OnInit{
 	onUpdateGraph(event: any) {
 		console.log("Loading graph from paths")
 		console.log("Paths to load: ", Array.from(this.selectedPaths.values()));
+		this.dataService.updateGraphPaths( Array.from(this.selectedPaths.values()));
 	}
 
 	ngOnInit(): void {

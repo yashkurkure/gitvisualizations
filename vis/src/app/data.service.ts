@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
@@ -20,7 +20,7 @@ import { FileTree, GraphDataRaw} from './types';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class DataService implements OnInit{
 
 
 	graphUrl = 'api/graph';
@@ -66,13 +66,12 @@ export class DataService {
 	private fileTreeBS: BehaviorSubject<FileTree> = new BehaviorSubject<FileTree>(this.defaultFileTree);
 	public fileTreeObservable: Observable<FileTree> = this.fileTreeBS.asObservable();
 
-	defaultGraphPaths: string[] = []
-	currentGraphPaths: string[] = []
+	defaultGraphPaths: string[] = ["/"]
+	currentGraphPaths: string[] = this.defaultGraphPaths;
 	private graphPathsBS: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(this.defaultGraphPaths);
 	public graphPathsObservable: Observable<string[]> = this.graphPathsBS.asObservable();
 
-	constructor(private http: HttpClient) {
-
+	constructor(private http: HttpClient){
 		// Initialize the file tree
 		let params1 = new HttpParams();
 		params1 = params1.append("githuburl", this.defaultGithubUrl)
@@ -85,15 +84,21 @@ export class DataService {
 		})
 
 		// Initialize the graph data
-		let params2 = new HttpParams();
-		params2 = params2.append("githuburl", this.defaultGithubUrl)
-		let httpObservable2 = this.http.get<GraphDataRaw>(this.graphUrl, {params: params2});
-		httpObservable2.subscribe((data: GraphDataRaw)=>{
-			if(data) {
-				this.graphDataRawBS.next(data);
-				this.currentGraphDataRaw = data;
-			}
-		})
+		// let params2 = new HttpParams();
+		// params2 = params2.append("githuburl", this.defaultGithubUrl)
+		// let httpObservable2 = this.http.get<GraphDataRaw>(this.graphUrl, {params: params2});
+		// httpObservable2.subscribe((data: GraphDataRaw)=>{
+		// 	if(data) {
+		// 		this.graphDataRawBS.next(data);
+		// 		this.currentGraphDataRaw = data;
+		// 	}
+		// })
+		const headers = { 'content-type': 'application/json'}  
+		const body=JSON.stringify({repourl: this.defaultGithubUrl, paths: this.defaultGraphPaths});
+		this.http.post<GraphDataRaw>(this.graphUrl, body, {'headers': headers}).subscribe((data: GraphDataRaw) => {
+			this.graphDataRawBS.next(data)
+			this.currentGraphDataRaw = data;
+		});
 
 		// Keep track of the current github url
 		this.githubUrlObservable.subscribe((data: string) => {
@@ -104,6 +109,14 @@ export class DataService {
 		this.graphDataRawObservable.subscribe((data: GraphDataRaw) => {
 			this.currentGraphDataRaw = data;
 		});
+
+		// Keep track of the current selected paths
+		this.graphPathsObservable.subscribe((data: string[])=>{
+			this.currentGraphPaths = data;
+		})
+	}
+	ngOnInit(): void {
+	
 	}
 
 	
@@ -113,13 +126,20 @@ export class DataService {
 		let params = new HttpParams();
 		params = params.append("githuburl", githubUrl)
 
-		let httpObservable = this.http.get<GraphDataRaw>(this.graphUrl, {params: params});
-		httpObservable.subscribe((data: GraphDataRaw)=>{
-			if(data) {
-				this.graphDataRawBS.next(data);
-				this.currentGraphDataRaw = data;
-			}
-		})
+		// let httpObservable = this.http.get<GraphDataRaw>(this.graphUrl, {params: params});
+		// httpObservable.subscribe((data: GraphDataRaw)=>{
+		// 	if(data) {
+		// 		this.graphDataRawBS.next(data);
+		// 		this.currentGraphDataRaw = data;
+		// 	}
+		// })
+
+		const headers = { 'content-type': 'application/json'}  
+		const body=JSON.stringify({repourl: githubUrl, paths: this.currentGraphPaths});
+		this.http.post<GraphDataRaw>(this.graphUrl, body, {'headers': headers}).subscribe((data: GraphDataRaw) => {
+			this.graphDataRawBS.next(data)
+			this.currentGraphDataRaw = data;
+		});
 
 		this.githubUrlBS.next(githubUrl);
 		this.updateFileTree(githubUrl)
@@ -142,7 +162,17 @@ export class DataService {
 
 	updateGraphPaths(paths: string[]) {
 		this.graphPathsBS.next(paths);
-		// update the graph data
+		this.githubUrlBS.next(this.currentGithubUrl)
+
+		let params = new HttpParams();
+		params = params.append("githuburl", this.currentGithubUrl)
+
+		const headers = { 'content-type': 'application/json'}  
+		const body=JSON.stringify({repourl: this.currentGithubUrl, paths: this.currentGraphPaths});
+		this.http.post<GraphDataRaw>(this.graphUrl, body, {'headers': headers}).subscribe((data: GraphDataRaw) => {
+			this.graphDataRawBS.next(data)
+			this.currentGraphDataRaw = data;
+		});
 	}
 
 	getCurrentGithubUrl(): string {

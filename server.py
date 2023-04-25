@@ -19,9 +19,10 @@ def serve_static(filename):
 
 @app.route('/api/filetree', methods=['GET'])
 def file_tree():
+    print("Received GET")
     repo_url = request.args.get("githuburl")
     tree_path = "/"
-    #print(f'Received url: {repo_url}')
+    print(f'Received url: {repo_url}')
 
     # Get the name of the repository.
     repo_name = repo_url.split('.git')[0].split('/')[-1]
@@ -77,13 +78,65 @@ def generateGraphData(path, tree, src_id, next_id):
                 "id": next_id,
                 "name": str(entity),
                 "leaf": 1 if os.path.isfile(path+ "/" + entity) else 0,
-                # "path": path + "/" + entity
+                "path": path + "/" + entity
             }
         )
         tree["links"].append({ "source": src_id, "target": next_id })
         next_id  = generateGraphData(path + "/" + entity, tree, next_id, next_id + 1)
     
     return next_id
+
+# Generate using DFS
+def generatePathTree(paths):
+
+    node_id_map = {}
+    nodes = set({(0, "/", 0, "")})
+    links = set({})
+
+    next_id = 1
+    src_id = 0
+
+    for path in paths:
+        prev_node_id = src_id
+        nodepath = ""
+        for nodename in path.split('/'):
+
+            if(nodename == ''):
+                continue
+            
+            # Case the node was already added
+            if nodename in node_id_map:
+                nodeid = node_id_map[nodename]
+                # the prev id for the next nodes should be the id of this node
+                prev_node_id = nodeid
+                continue
+
+            nodepath = "/" + nodename
+            nodeData = (next_id, nodename, 1 if os.path.isfile(nodepath) else 0, nodepath)
+            linkData = (prev_node_id, next_id)
+            nodes.add(nodeData)
+            node_id_map[nodename] = next_id
+            links.add(linkData)
+            prev_node_id = next_id
+            next_id+=1
+    
+    nodes_list = []
+    for nodedata in nodes:
+        nodes_list.append({
+                "id": nodedata[0],
+                "name": nodedata[1],
+                "leaf": nodedata[2],
+                "path": nodedata[3]
+            })
+    links_list = []
+    for linkdata in links:
+        links_list.append({
+                "source": linkdata[0],
+                "target": linkdata[1]
+            })
+
+
+    return {"nodes": nodes_list, "links": links_list}
 
 def generateFileTree(path, parentPath, tree):
     directories = listDirs(path)
@@ -107,13 +160,15 @@ def generateFileTree(path, parentPath, tree):
             "children" : [],
         })
 
-@app.route('/api/graph', methods=['GET'])
+@app.route('/api/graph', methods=['POST'])
 def api_graph():
+    content = request.get_json()
+    print("Received POST: ", content)
     
     # Get the url of the repository.
-    repo_url = request.args.get("githuburl")
-    tree_path = "/"
-    print(f'Received url: {repo_url}')
+    repo_url = content['repourl']
+    paths = content['paths']
+    print(generatePathTree(paths))
 
     # Get the name of the repository.
     repo_name = repo_url.split('.git')[0].split('/')[-1]
@@ -151,8 +206,7 @@ def api_graph():
     generateGraphData(repo_clone_path, tree, 1, 2)
     print(f'Generating tree...')
     #generateTreeAlongPath(path, 0, tree, 2, 1)
-    json_object = json.dumps(tree, indent = 4)
-    print(json_object)
+    json_object = json.dumps(generatePathTree(paths), indent = 4)
     #print(f'Sending response to frontend...')
     response = app.response_class(
         response=json_object,
