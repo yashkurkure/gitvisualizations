@@ -199,7 +199,7 @@ export class PathinputComponent implements OnInit{
 	// TODO: update to filetree
 	//hasChild = (_: number, node: FileTree) => !!node.children && node.children.length > 0;
 	
-	constructor(private graphService: GraphService, private dataService: DataService, database: DynamicDatabase) {
+	constructor(private graphService: GraphService, private dataService: DataService, private database: DynamicDatabase) {
 		this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
 
 		
@@ -239,38 +239,41 @@ export class PathinputComponent implements OnInit{
 
 	selectedPaths: Set<string> = new Set<string>();
 
-	onPathCheckBoxChange(event: MatCheckboxChange, node: DynamicFlatNode) {
-		// const path = node.path;
-		// if (event.checked) {
-		// 	//console.log("Add path", path)
-		// 	//this.selectedPaths.add(path);
-		// 	// if the node is a directory select the files in it
-		// 	console.log(node.isFile)
-		// 	if(!node.isFile){
-		// 		console.log("Adding directory from paths")
-		// 		this.selectedPaths.add(path + "/*");
-		// 	} else {
-		// 		this.selectedPaths.add(path);
-		// 	}
-		// }
-		// else {
-		// 	//console.log("Remove path", path)
-		// 	//this.selectedPaths.delete(path);
-		// 	console.log(node.isFile)
-		// 	if(!node.isFile){
-		// 		console.log("Removing directory from paths")
-		// 		this.selectedPaths.delete(path + "/*");
-		// 	} else {
-		// 		this.selectedPaths.delete(path);
-		// 	}
-		// 	// // if the node is a directory deselect the files in it
-		// 	// if(!node.isFile){
-		// 	// 	node.children.forEach((child: FileTree) => {
-		// 	// 		this.selectedPaths.delete(child.path);
-		// 	// 	})
-		// 	// }
-		// }
-		// this.updateGraphPaths()
+	onPathCheckBoxChange(event: MatCheckboxChange, nodeF: DynamicFlatNode) {
+
+		let node :FileTree = this.database.nodeMap.get(nodeF.item)!
+
+		const path = node.path;
+		if (event.checked) {
+			//console.log("Add path", path)
+			//this.selectedPaths.add(path);
+			// if the node is a directory select the files in it
+			console.log(node.isFile)
+			if(!node.isFile){
+				console.log("Adding directory from paths")
+				this.selectedPaths.add(path + "/*");
+			} else {
+				this.selectedPaths.add(path);
+			}
+		}
+		else {
+			//console.log("Remove path", path)
+			//this.selectedPaths.delete(path);
+			console.log(node.isFile)
+			if(!node.isFile){
+				console.log("Removing directory from paths")
+				this.selectedPaths.delete(path + "/*");
+			} else {
+				this.selectedPaths.delete(path);
+			}
+			// // if the node is a directory deselect the files in it
+			// if(!node.isFile){
+			// 	node.children.forEach((child: FileTree) => {
+			// 		this.selectedPaths.delete(child.path);
+			// 	})
+			// }
+		}
+		this.updateGraphPaths()
 
 	}
 	
