@@ -141,7 +141,7 @@ export class DynamicDataSource implements DataSource<DynamicFlatNode> {
     setTimeout(() => {
       if (expand) {
         const nodes = children.map(
-          name => new DynamicFlatNode(name, node.level + 1, this._database.isExpandable(name)),
+          name => new DynamicFlatNode(name, node.level + 1, this._database.isExpandable(name), true),
         );
         this.data.splice(index + 1, 0, ...nodes);
       } else {
@@ -168,6 +168,7 @@ export class DynamicFlatNode {
 	  public item: string,
 	  public level = 1,
 	  public expandable = false,
+	  public isChecked = false,
 	  public isLoading = false,
 	) {}
   }
@@ -242,6 +243,8 @@ export class PathinputComponent implements OnInit{
 
 		const path = node.path;
 		if (event.checked) {
+
+			nodeF.isChecked = true;
 			//console.log("Add path", path)
 			//this.selectedPaths.add(path);
 			// if the node is a directory select the files in it
@@ -254,6 +257,7 @@ export class PathinputComponent implements OnInit{
 			}
 		}
 		else {
+			nodeF.isChecked = false;
 			//console.log("Remove path", path)
 			//this.selectedPaths.delete(path);
 			console.log(node.isFile)
@@ -287,8 +291,19 @@ export class PathinputComponent implements OnInit{
 		
 	}
 
-	checkStatus(node: DynamicFlatNode) {
-		
+	getCheckboxValue(nodeF: DynamicFlatNode): boolean {
+
+		let node :FileTree = this.database.nodeMap.get(nodeF.item)!
+
+		let path = node.path;
+
+		if(this.selectedPaths.has(path)) {
+			return true
+		}
+		else {
+			return false
+		}
+
 	}
 
 }
