@@ -18,8 +18,8 @@ import {map} from 'rxjs/operators';
 @Injectable({providedIn: 'root'})
 export class DynamicDatabase {
   nodeMap = new Map<string, FileTree>();
-  fileTree!: FileTree;
-  defaultFileTree: FileTree[] = [
+//   fileTree!: FileTree;
+  fileTree: FileTree[] = [
 		{name: "file1", isFile: false, path: "/file1", children: []},
 		{name: "file2", isFile: false, path: "/file2", children: []},
 		{name: "file3", isFile: false, path: "/file3", children: []},
@@ -32,15 +32,12 @@ export class DynamicDatabase {
 			]}
 	];
 
-  rootLevelNodes!: FileTree[];
+//   rootLevelNodes!: FileTree[];
 
 
-//   setFileTree(fileTree: FileTree): void {
-// 	this.fileTree = fileTree;
-// 	this.rootLevelNodes = this.fileTree.children;
-// 	console.log("Root nodes set: ", this.rootLevelNodes);
-// 	this.initDatabase([this.fileTree]);
-//   }
+  setFileTree(fileTree: FileTree): void {
+	this.fileTree = fileTree.children;
+  }
 
   initDatabase(fileTree: FileTree[]): void {
 
@@ -53,8 +50,8 @@ export class DynamicDatabase {
 
   /** Initial data from database */
   initialData(): DynamicFlatNode[] {
-	this.initDatabase(this.defaultFileTree);
-    const root = this.defaultFileTree.map(tree => new DynamicFlatNode(tree.name, 0, tree.children.length == 0? false: true));
+	this.initDatabase(this.fileTree);
+    const root = this.fileTree.map(tree => new DynamicFlatNode(tree.name, 0, tree.children.length == 0? false: true));
 	console.log("Root nodes: ", root)
 	return root;
   }
@@ -186,7 +183,7 @@ export class PathinputComponent implements OnInit{
 	  treeControl!: FlatTreeControl<DynamicFlatNode>;
 	
 	  dataSource!: DynamicDataSource;
-	//   dataSourceBS!: BehaviorSubject<DynamicDataSource>
+	  dataSourceBS!: BehaviorSubject<DynamicDataSource>
 	
 	  getLevel = (node: DynamicFlatNode) => node.level;
 	
@@ -209,25 +206,26 @@ export class PathinputComponent implements OnInit{
 
 		// database.setFileTree(this.dataService.defaultFileTree)
 		this.dataSource = new DynamicDataSource(this.treeControl, database);
-		// this.dataSourceBS = new BehaviorSubject<DynamicDataSource> (this.dataSource);
+		this.dataSourceBS = new BehaviorSubject<DynamicDataSource> (this.dataSource);
 		
 		this.dataSource.data = database.initialData();
 		this.fileTree = dataService.defaultFileTree;
 		// this.dataSource.data = this.fileTree.children;
 		
-		// this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
-		// 	this.fileTree = data;
-		// 	// this.dataSource.data = this.fileTree.children;
-		// 	// database.setFileTree(this.fileTree)
-		// 	// this.dataSourceBS.next(new DynamicDataSource(this.treeControl, database));
-		// 	this.selectedPaths.clear()
-		// })
+		this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
+			this.fileTree = data;
+			// this.dataSource.data = this.fileTree.children;
+			database.setFileTree(this.fileTree)
+			this.dataSourceBS.next(new DynamicDataSource(this.treeControl, database));
+			this.selectedPaths.clear()
+		})
 
-		// this.dataSourceBS.subscribe((dataSource) => {
-		// 	console.log("dataSrouceBS subscribe change")
-		// 	this.dataSource = dataSource
-		// 	this.treeControl.collapseAll();
-		// });
+		this.dataSourceBS.subscribe((dataSource) => {
+			console.log("dataSrouceBS subscribe change")
+			this.dataSource = dataSource
+			this.dataSource.data = database.initialData();
+			this.treeControl.collapseAll();
+		});
 	}
 
 	// fullDatasource = [...this.sampleFileTree.children].map((item, index) => {
