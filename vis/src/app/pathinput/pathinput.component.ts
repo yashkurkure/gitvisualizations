@@ -239,38 +239,38 @@ export class PathinputComponent implements OnInit{
 
 	selectedPaths: Set<string> = new Set<string>();
 
-	onPathCheckBoxChange(event: MatCheckboxChange, node: FileTree) {
-		const path = node.path;
-		if (event.checked) {
-			//console.log("Add path", path)
-			//this.selectedPaths.add(path);
-			// if the node is a directory select the files in it
-			console.log(node.isFile)
-			if(!node.isFile){
-				console.log("Adding directory from paths")
-				this.selectedPaths.add(path + "/*");
-			} else {
-				this.selectedPaths.add(path);
-			}
-		}
-		else {
-			//console.log("Remove path", path)
-			//this.selectedPaths.delete(path);
-			console.log(node.isFile)
-			if(!node.isFile){
-				console.log("Removing directory from paths")
-				this.selectedPaths.delete(path + "/*");
-			} else {
-				this.selectedPaths.delete(path);
-			}
-			// // if the node is a directory deselect the files in it
-			// if(!node.isFile){
-			// 	node.children.forEach((child: FileTree) => {
-			// 		this.selectedPaths.delete(child.path);
-			// 	})
-			// }
-		}
-		this.updateGraphPaths()
+	onPathCheckBoxChange(event: MatCheckboxChange, node: DynamicFlatNode) {
+		// const path = node.path;
+		// if (event.checked) {
+		// 	//console.log("Add path", path)
+		// 	//this.selectedPaths.add(path);
+		// 	// if the node is a directory select the files in it
+		// 	console.log(node.isFile)
+		// 	if(!node.isFile){
+		// 		console.log("Adding directory from paths")
+		// 		this.selectedPaths.add(path + "/*");
+		// 	} else {
+		// 		this.selectedPaths.add(path);
+		// 	}
+		// }
+		// else {
+		// 	//console.log("Remove path", path)
+		// 	//this.selectedPaths.delete(path);
+		// 	console.log(node.isFile)
+		// 	if(!node.isFile){
+		// 		console.log("Removing directory from paths")
+		// 		this.selectedPaths.delete(path + "/*");
+		// 	} else {
+		// 		this.selectedPaths.delete(path);
+		// 	}
+		// 	// // if the node is a directory deselect the files in it
+		// 	// if(!node.isFile){
+		// 	// 	node.children.forEach((child: FileTree) => {
+		// 	// 		this.selectedPaths.delete(child.path);
+		// 	// 	})
+		// 	// }
+		// }
+		// this.updateGraphPaths()
 
 	}
 	

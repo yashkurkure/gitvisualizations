@@ -7,7 +7,7 @@
 			<mat-tree class="scrollable-tree" [dataSource]="dataSource" [treeControl]="treeControl">
 				<mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
 				  <button mat-icon-button disabled></button>
-				  {{node.item}}
+				  <mat-checkbox (change)="onPathCheckBoxChange($event, node)" > {{node.item}} </mat-checkbox>
 				</mat-tree-node>
 				<mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
 				  <button mat-icon-button
@@ -16,7 +16,7 @@
 					  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
 					</mat-icon>
 				  </button>
-				  {{node.item}}
+				  <mat-checkbox (change)="onPathCheckBoxChange($event, node)" > {{node.item}} </mat-checkbox>
 				  <mat-progress-bar *ngIf="node.isLoading"
 									mode="indeterminate"
 									class="example-tree-progress-bar"></mat-progress-bar>
