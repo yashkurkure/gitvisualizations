@@ -228,9 +228,6 @@ export class PathinputComponent implements OnInit{
 		});
 	}
 
-	// fullDatasource = [...this.sampleFileTree.children].map((item, index) => {
-	// 	return { ...item, filename: item.name };
-	//   });
 
 	// Form control for the github url input
 	pathInputForm = new FormGroup({
@@ -287,6 +284,10 @@ export class PathinputComponent implements OnInit{
 	}
 
 	ngOnInit(): void {
+		
+	}
+
+	checkStatus(node: DynamicFlatNode) {
 		
 	}
 
