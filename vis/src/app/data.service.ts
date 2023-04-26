@@ -61,7 +61,7 @@ export class DataService implements OnInit{
 	private graphDataRawBS: BehaviorSubject<GraphDataRaw> = new BehaviorSubject<GraphDataRaw>(this.defualtGraphDataRaw);
 	public graphDataRawObservable: Observable<GraphDataRaw> = this.graphDataRawBS.asObservable()
 
-	defaultFileTree: FileTree = {name: "", isFile: false, path: "", children: []};
+	defaultFileTree: FileTree = {name: "dir1", isFile: false, path: "/dir1", children: [{name: "file2", isFile: false, path: "/dir1/file2", children: []}]};
 	currentFileTree: FileTree = {name: "", isFile: false, path: "", children: []};
 	private fileTreeBS: BehaviorSubject<FileTree> = new BehaviorSubject<FileTree>(this.defaultFileTree);
 	public fileTreeObservable: Observable<FileTree> = this.fileTreeBS.asObservable();

@@ -17,35 +17,73 @@ import {map} from 'rxjs/operators';
  */
 @Injectable({providedIn: 'root'})
 export class DynamicDatabase {
-  dataMap = new Map<string, string[]>([
-    ['Fruits', ['Apple', 'Orange', 'Banana']],
-    ['Vegetables', ['Tomato', 'Potato', 'Onion', 'Broccoli']],
-    ['Apple', ['Fuji', 'Macintosh']],
-    ['Onion', ['Yellow', 'White', 'Purple']],
-  ]);
+  nodeMap = new Map<string, FileTree>();
+  fileTree!: FileTree;
+  defaultFileTree: FileTree[] = [
+		{name: "file1", isFile: false, path: "/file1", children: []},
+		{name: "file2", isFile: false, path: "/file2", children: []},
+		{name: "file3", isFile: false, path: "/file3", children: []},
+		{name: "file4", isFile: false, path: "/file4", children: []},
+		{name: "dir5", isFile: false, path: "/dir5", children: [
+				{name: "file1", isFile: false, path: "/file1", children: []},
+				{name: "file2", isFile: false, path: "/file2", children: []},
+				{name: "file3", isFile: false, path: "/file3", children: []},
+				{name: "file4", isFile: false, path: "/file4", children: []},
+			]}
+	];
 
-  rootLevelNodes: string[] = ['Fruits', 'Vegetables'];
+  rootLevelNodes!: FileTree[];
+
+
+//   setFileTree(fileTree: FileTree): void {
+// 	this.fileTree = fileTree;
+// 	this.rootLevelNodes = this.fileTree.children;
+// 	console.log("Root nodes set: ", this.rootLevelNodes);
+// 	this.initDatabase([this.fileTree]);
+//   }
+
+  initDatabase(fileTree: FileTree[]): void {
+
+	fileTree.forEach((tree: FileTree) => {
+		this.nodeMap.set(tree.name, tree);
+		this.initDatabase(tree.children);
+	});
+  }
+
 
   /** Initial data from database */
   initialData(): DynamicFlatNode[] {
-    return this.rootLevelNodes.map(name => new DynamicFlatNode(name, 0, true));
+	this.initDatabase(this.defaultFileTree);
+    const root = this.defaultFileTree.map(tree => new DynamicFlatNode(tree.name, 0, tree.children.length == 0? false: true));
+	console.log("Root nodes: ", root)
+	return root;
   }
 
-  getChildren(node: string): string[] | undefined {
-    return this.dataMap.get(node);
+  getChildrenNames(node: string): string[] | undefined {
+    return this.nodeMap.get(node)!.children.map(tree=> tree.name);
   }
 
   isExpandable(node: string): boolean {
-    return this.dataMap.has(node);
+
+	let result = false;
+
+	let fileTree = this.nodeMap.get(node);
+
+	if(!fileTree) result = false;
+	else {
+		if (fileTree.children.length == 0) {
+			result = false;
+		} else {
+			result = true;
+		}
+	}
+
+	console.log(node, "is expandable: ",result)
+	return result;
   }
 }
-/**
- * File database, it can build a tree structured Json object from string.
- * Each node in Json object represents a file or a directory. For a file, it has filename and type.
- * For a directory, it has filename and children (a list of files or directories).
- * The input will be a json object string, and the output is a list of `FileNode` with nested
- * structure.
- */
+
+
 export class DynamicDataSource implements DataSource<DynamicFlatNode> {
   dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);
 
@@ -94,7 +132,7 @@ export class DynamicDataSource implements DataSource<DynamicFlatNode> {
    * Toggle the node, remove from display list
    */
   toggleNode(node: DynamicFlatNode, expand: boolean) {
-    const children = this._database.getChildren(node.item);
+    const children = this._database.getChildrenNames(node.item);
     const index = this.data.indexOf(node);
     if (!children || index < 0) {
       // If no children, or cannot find the node, no op
@@ -127,36 +165,6 @@ export class DynamicDataSource implements DataSource<DynamicFlatNode> {
 }
 
 
-	/**
- * Food data with nested structure.
- * Each node has a name and an optional list of children.
- */
-	interface FoodNode {
-		name: string;
-		children?: FoodNode[];
-	}
-
-
-	const TREE_DATA: FoodNode[] = [
-		{
-		  name: 'Fruit',
-		  children: [{name: 'Apple'}, {name: 'Banana'}, {name: 'Fruit loops'}],
-		},
-		{
-		  name: 'Vegetables',
-		  children: [
-			{
-			  name: 'Green',
-			  children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
-			},
-			{
-			  name: 'Orange',
-			  children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
-			},
-		  ],
-		},
-	  ];
-
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {
 	constructor(
@@ -178,6 +186,7 @@ export class PathinputComponent implements OnInit{
 	  treeControl!: FlatTreeControl<DynamicFlatNode>;
 	
 	  dataSource!: DynamicDataSource;
+	//   dataSourceBS!: BehaviorSubject<DynamicDataSource>
 	
 	  getLevel = (node: DynamicFlatNode) => node.level;
 	
@@ -195,17 +204,30 @@ export class PathinputComponent implements OnInit{
 	
 	constructor(private graphService: GraphService, private dataService: DataService, database: DynamicDatabase) {
 		this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
+
+		
+
+		// database.setFileTree(this.dataService.defaultFileTree)
 		this.dataSource = new DynamicDataSource(this.treeControl, database);
-	
+		// this.dataSourceBS = new BehaviorSubject<DynamicDataSource> (this.dataSource);
+		
 		this.dataSource.data = database.initialData();
 		this.fileTree = dataService.defaultFileTree;
 		// this.dataSource.data = this.fileTree.children;
 		
 		// this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
 		// 	this.fileTree = data;
-		// this.dataSource.data = this.fileTree.children;
+		// 	// this.dataSource.data = this.fileTree.children;
+		// 	// database.setFileTree(this.fileTree)
+		// 	// this.dataSourceBS.next(new DynamicDataSource(this.treeControl, database));
 		// 	this.selectedPaths.clear()
 		// })
+
+		// this.dataSourceBS.subscribe((dataSource) => {
+		// 	console.log("dataSrouceBS subscribe change")
+		// 	this.dataSource = dataSource
+		// 	this.treeControl.collapseAll();
+		// });
 	}
 
 	// fullDatasource = [...this.sampleFileTree.children].map((item, index) => {
