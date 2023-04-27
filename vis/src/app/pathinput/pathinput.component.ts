@@ -32,27 +32,23 @@ export class DynamicDatabase {
 			]}
 	];
 
-//   rootLevelNodes!: FileTree[];
+	nodeCheck: Map<string, boolean> = new Map<string, boolean>;
 
-
-  setFileTree(fileTree: FileTree): void {
-	this.fileTree = fileTree.children;
-  }
-
-  initDatabase(fileTree: FileTree[]): void {
+  private initDatabase(fileTree: FileTree[]): void {
 
 	fileTree.forEach((tree: FileTree) => {
 		this.nodeMap.set(tree.name, tree);
+		this.nodeCheck.set(tree.name, false)
 		this.initDatabase(tree.children);
 	});
   }
 
 
   /** Initial data from database */
-  initialData(): DynamicFlatNode[] {
+  initialData(fileTree: FileTree): DynamicFlatNode[] {
+	this.fileTree = fileTree.children;
 	this.initDatabase(this.fileTree);
-    const root = this.fileTree.map(tree => new DynamicFlatNode(tree.name, 0, tree.children.length == 0? false: true));
-	console.log("Root nodes: ", root)
+    const root = this.fileTree.map(tree => new DynamicFlatNode(tree.name, 0, tree.children.length == 0? false: true, this.nodeCheck.get(tree.name)!));
 	return root;
   }
 
@@ -141,7 +137,7 @@ export class DynamicDataSource implements DataSource<DynamicFlatNode> {
     setTimeout(() => {
       if (expand) {
         const nodes = children.map(
-          name => new DynamicFlatNode(name, node.level + 1, this._database.isExpandable(name), true),
+          name => new DynamicFlatNode(name, node.level + 1, this._database.isExpandable(name), this._database.nodeCheck.get(name)!),
         );
         this.data.splice(index + 1, 0, ...nodes);
       } else {
@@ -209,23 +205,24 @@ export class PathinputComponent implements OnInit{
 		this.dataSource = new DynamicDataSource(this.treeControl, database);
 		this.dataSourceBS = new BehaviorSubject<DynamicDataSource> (this.dataSource);
 		
-		this.dataSource.data = database.initialData();
+		
 		this.fileTree = dataService.defaultFileTree;
-		// this.dataSource.data = this.fileTree.children;
+		this.dataSource.data = database.initialData(this.fileTree);
 		
 		this.dataService.fileTreeObservable.subscribe((data: FileTree) => {
+
+			// Updat the file tree
 			this.fileTree = data;
-			// this.dataSource.data = this.fileTree.children;
-			database.setFileTree(this.fileTree)
+		
+			// Update the data srouce of the dynamic material tree
 			this.dataSourceBS.next(new DynamicDataSource(this.treeControl, database));
 			this.selectedPaths.clear()
 		})
 
 		this.dataSourceBS.subscribe((dataSource) => {
-			console.log("dataSrouceBS subscribe change")
+			
 			this.dataSource = dataSource
-			this.dataSource.data = database.initialData();
-			this.treeControl.collapseAll();
+			this.dataSource.data = database.initialData(this.fileTree);
 		});
 	}
 
@@ -245,6 +242,7 @@ export class PathinputComponent implements OnInit{
 		if (event.checked) {
 
 			nodeF.isChecked = true;
+			this.database.nodeCheck.set(nodeF.item, true)
 			//console.log("Add path", path)
 			//this.selectedPaths.add(path);
 			// if the node is a directory select the files in it
@@ -258,6 +256,7 @@ export class PathinputComponent implements OnInit{
 		}
 		else {
 			nodeF.isChecked = false;
+			this.database.nodeCheck.set(nodeF.item, false)
 			//console.log("Remove path", path)
 			//this.selectedPaths.delete(path);
 			console.log(node.isFile)
