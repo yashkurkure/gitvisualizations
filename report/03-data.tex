@@ -1,1 +1,27 @@
 \section{Data description}
+
+The data for this project lies within a cloned git repository. Git stores data as a series of snapshots instead of storing differences between file versions like many other version control systems. Each commit in Git represents a snapshot of the entire working directory at a given point in time. The data is stored as objects, which are identified by a unique SHA-1 hash. There are four types of objects:
+\begin{itemize}
+    \item Blob: Represents a file and its contents.
+    \item Tree: Represents a directory and stores references to blob objects (files) and other tree objects (subdirectories).
+    \item Commit: Represents a snapshot of the repository, including metadata such as author, committer, date, and a message. A commit object also references the tree object representing the root directory of the snapshot.
+    \item Tag: A lightweight object that references a commit object to create a more human-readable name for a particular commit, typically used for marking releases.
+\end{itemize}
+Git objects are stored in the ".git/objects" directory as individual files. However, to save space and improve performance, Git periodically repacks objects into packfiles. A packfile contains multiple objects and their delta-compressed versions, which helps reduce storage space.
+Although we could write our own scripts to go through all this data stored in the .git folder, it is not necessary to do so. Git already provides a efficient command line interface to query this database. Additional details about the inner workings of git can be found at \cite{gitinternals} and the git docs \cite{gitdocs}. 
+
+Some data does not reside locally in the cloned repository and can be accessed using Github's REST API \cite{gitrestapi}.
+
+A general list of attributes that one can query using git/Github's REST API:
+\begin{itemize}
+    \item branches
+    \item commits
+    \item contributors
+    \item pull requests
+    \item forks
+    \item files
+    \item directories
+    \item code and line count - additions/deletions
+\end{itemize}
+
+This list is not perfect as each attribute on the list can have further details such as each commit has a date associated with it and each pull request only affects the changed files and directories. The goal of this project is to use a combination of these attributes and make it easy for a developer to gain insights about the code base. For example, a developer might be interested in the pull requests that have modified a specific file.
