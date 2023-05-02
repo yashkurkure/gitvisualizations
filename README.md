@@ -1,4 +1,4 @@
-# Git/Githun Visualizations
+# Git/Github Visualizations
 
 Final project for CS524 - Big Data Visualization & Analytics.
 
